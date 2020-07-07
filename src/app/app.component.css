@@ -1,0 +1,7 @@
+.mat-grid-tile {
+  border: solid 2px #000;
+}
+.mat-figure {
+  justify-content: flex-start !important ;
+  align-items: flex-start !important;
+}

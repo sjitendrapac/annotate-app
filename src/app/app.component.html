@@ -1,0 +1,16 @@
+<div id="container">
+  <mat-toolbar>
+    <div class="logo" style="float: left;">
+      <a href="/"> Annotate-App </a>
+    </div>
+  </mat-toolbar>
+  <mat-grid-list cols="2">
+    <mat-grid-tile #colKonva>
+      <input *ngIf="!imageLoaded" type="file" accept="image/*" (change)="onSelectFile($event)" />
+      <app-konva-shape [imageSrc]="imageSrc" *ngIf="imageLoaded" id="konvaContainer"></app-konva-shape>
+    </mat-grid-tile>
+    <mat-grid-tile>
+      <app-annotate *ngIf="imageLoaded"></app-annotate>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

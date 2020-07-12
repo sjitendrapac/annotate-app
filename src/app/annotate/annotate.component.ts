@@ -4,76 +4,96 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { AnnotationdataService } from '../services/annotationdata.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
+export interface TextObject {
+  label: any;
+  type: any;
+  text: any;
+}
+
+const textArray: TextObject[] = [];
 
 @Component({
   selector: 'app-annotate',
   templateUrl: './annotate.component.html',
   styleUrls: ['./annotate.component.css']
 })
+
+
 export class AnnotateComponent implements OnInit {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  // @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<any>;
   public dataSource = new MatTableDataSource<any>();
-  public dataArr = new Array();
 
-  displayedColumns = ['label', 'name', 'type'];
+  displayedColumns = ['label', 'type', 'text'];
 
   @ViewChild('f', { static: true }) signupForm: NgForm;
+
   types = [
     { value: 'Number', viewValue: 'Number' },
     { value: 'Single-Line Text', viewValue: 'Singe-Line Text' },
     { value: 'Multi-Line Text', viewValue: 'Multi-Line Text' }
   ];
-  dataAdded: boolean = false;
+
+  rectReady = false;
+  dataAdded = false;
+
   uploadForm: FormGroup;
-  dataObj = {
-    label: "",
-    name: "",
-    type: ""
+
+  obj: TextObject = {
+    label: '',
+    type: '',
+    text: '',
+  };
+
+  array: TextObject[] = [];
+
+  subscription: Subscription;
+  mission = '<no mission announced>';
+
+  constructor(private fb: FormBuilder, private aService: AnnotationdataService) {
+    this.subscription = aService.missionAnnounced$.subscribe(
+      mission => {
+        this.mission = mission;
+        this.rectReady = true;
+      });
   }
 
-  constructor(private fb: FormBuilder, private aService: AnnotationdataService) { }
-
   ngOnInit() {
-    console.log("ngOnInit called")
     this.uploadForm = this.fb.group({
       label: [''],
       name: [''],
       type: [''],
     });
-    // this.dataSource.data = this.dataArr;
-    console.log(this.aService.getData())
-    this.dataSource.data = this.aService.getData()
+    this.dataSource.data = textArray;
     this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+    // this.dataSource.paginator = this.paginator;
   }
 
-  // ngAfterViewInit() {
-
-  //   // this.table.dataSource = this.dataSource;
-  // }
-
-  tableUpdate(obj) {
-    console.log("before:", this.dataArr, this.dataSource.data)
-    this.dataArr.push(obj)
-    console.log("After:", this.dataArr, this.dataSource.data)
-    this.dataSource.data = this.dataArr;
+  // tslint:disable-next-line: use-lifecycle-interface
+  ngOnDestroy(): void {
+    // prevent memory leak when component destroyed
+    this.subscription.unsubscribe();
   }
 
+  // tslint:disable-next-line: typedef
   get f() { return this.uploadForm.controls; }
 
   onSubmit(f) {
-    // console.log("Add Pressed", f)
+    console.log('onSubmit');
+    console.log(f);
     this.dataAdded = true;
-    this.dataObj.label = f.label.value;
-    this.dataObj.name = f.name.value;
-    this.dataObj.type = f.type.value;
-    console.log(this.dataObj)
-    console.log(this.dataArr)
-    this.dataSource.data = this.aService.addData(this.dataObj);
-    // this.tableUpdate(this.dataObj)
+    this.rectReady = false;
+    this.obj.label = f.label.value;
+    this.obj.type = f.type.value;
+    console.log(this.obj);
+    console.log('textArray bef: ', textArray);
+    textArray.push(this.obj);
+    console.log('textArray aft: ', textArray);
+    // textArray = this.array.slice();
+    this.dataSource.data = textArray.slice();
     this.uploadForm.reset();
   }
 }

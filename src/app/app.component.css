@@ -1,7 +1,19 @@
-.mat-grid-tile {
-  border: solid 2px #000;
+.input {
+  /* padding: 5px; */
+  margin: 5px;
 }
-.mat-figure {
-  justify-content: flex-start !important ;
-  align-items: flex-start !important;
+.logo {
+  /* max-width: 10rem; */
+  line-height: 1.2;
+  margin-top: 0.25rem;
+  max-width: 100%;
+  max-height: 100%;
+}
+.fillSpace {
+  flex: 1 1 auto;
+}
+
+.fullWidth {
+  width: 80%;
+  height: 80%;
 }

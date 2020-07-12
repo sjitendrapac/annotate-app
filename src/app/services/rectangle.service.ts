@@ -5,18 +5,7 @@ import Konva from 'konva';
   providedIn: 'root',
 })
 export class RectangleService {
-  constructor() {}
-
-  line(pos, mode: string = 'brush') {
-    return new Konva.Line({
-      stroke: '#df4b26',
-      strokeWidth: 5,
-      globalCompositeOperation:
-        mode === 'brush' ? 'source-over' : 'destination-out',
-      points: [pos.x, pos.y],
-      draggable: mode == 'brush',
-    });
-  }
+  constructor() { }
 
   rectangle(pos: any, w: number, h: number) {
     return new Konva.Rect({
@@ -24,8 +13,8 @@ export class RectangleService {
       y: pos.y,
       width: w,
       height: h,
-      stroke: 'black',
-      strokeWidth: 4,
+      stroke: 'red',
+      strokeWidth: 2,
       draggable: true,
     });
   }

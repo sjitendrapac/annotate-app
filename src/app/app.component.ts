@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { KonvaShapeComponent } from './konva-shape/konva-shape.component'
+import { KonvaShapeComponent } from './konva-shape/konva-shape.component';
 
 @Component({
   selector: 'app-root',
@@ -11,13 +11,13 @@ export class AppComponent implements OnInit {
 
   title = 'Annotate App';
   imageSrc;
-  imageLoaded: boolean = false;
+  imageLoaded = false;
   constructor() { }
 
-  ngOnInit() {
-  }
+  // tslint:disable-next-line: typedef
+  ngOnInit() { }
 
-  onSelectFile(e) {
+  onSelectFile(e: { target: { files: string | any[]; }; }): void {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
       reader.addEventListener('load', () => {
@@ -28,5 +28,5 @@ export class AppComponent implements OnInit {
       });
       reader.readAsDataURL(e.target.files[0]);
     }
-  };
+  }
 }

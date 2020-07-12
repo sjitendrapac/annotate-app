@@ -1,11 +1,11 @@
-<div class=row style="float:top;margin-top: 10px;margin-left: 10px">
-    <form [formGroup]="uploadForm" (ngSubmit)="onSubmit(f)">
+<div class="row justify-content-center w-100">
+    <form [formGroup]="uploadForm" class="w-100" (ngSubmit)="onSubmit(f)">
         <mat-form-field>
             <input matInput formControlName="label" placeholder="Label">
         </mat-form-field>
-        <mat-form-field>
+        <!-- <mat-form-field>
             <input matInput formControlName="name" placeholder="Name">
-        </mat-form-field>
+        </mat-form-field> -->
         <mat-form-field>
             <mat-label>Type</mat-label>
             <mat-select formControlName="type">
@@ -14,35 +14,37 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <button mat-raised-button style="float:right;margin-top: 10px;margin-left: 10px">Add </button>
+        <button mat-raised-button [disabled]="!rectReady" style="float:right;margin-top: 10px;margin-left: 10px">Add
+        </button>
     </form>
 </div>
-<div class=row>
-    <div class="mat-elevation-z8">
+<div class="row justify-content-center w-100" style="min-width: 300px;">
+    <div class=" w-100">
         <table [dataSource]="dataSource" mat-table class="full-width-table" matSort aria-label="Elements">
-            <!-- Id Column -->
+            <!-- Label Column -->
             <ng-container matColumnDef="label">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Label</th>
                 <td mat-cell *matCellDef="let row">{{row.label}}</td>
             </ng-container>
 
-            <!-- Name Column -->
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-                <td mat-cell *matCellDef="let row">{{row.name}}</td>
-            </ng-container>
-            <!-- Name Column -->
+            <!-- Type Column -->
             <ng-container matColumnDef="type">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
                 <td mat-cell *matCellDef="let row">{{row.type}}</td>
+            </ng-container>
+
+            <!-- Returned Text Column -->
+            <ng-container matColumnDef="text">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Text</th>
+                <td mat-cell *matCellDef="let row">{{row.text}}</td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
 
-        <mat-paginator #paginator [length]="dataSource?.data.length" [pageIndex]="0" [pageSize]="50"
+        <!-- <mat-paginator #paginator [length]="dataSource?.data.length" [pageIndex]="0" [pageSize]="50"
             [pageSizeOptions]="[25, 50, 100, 250]">
-        </mat-paginator>
+        </mat-paginator> -->
     </div>
 </div>

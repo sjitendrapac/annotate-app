@@ -17,6 +17,8 @@ export class AppComponent implements OnInit {
   // tslint:disable-next-line: typedef
   ngOnInit() { }
 
+
+
   onSelectFile(e: { target: { files: string | any[]; }; }): void {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();

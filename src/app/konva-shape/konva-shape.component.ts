@@ -41,17 +41,25 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   setupKonva() {
-    const width = this.parentEl.clientWidth * 0.9;
-    const height = this.parentEl.clientHeight * 0.9;
+    const width = this.parentEl.clientWidth;
+    const height = this.parentEl.clientHeight * 0.8;
+    // const width = window.innerWidth * 0.9;
+    // const height = window.innerHeight;
+
     this.stage = new Konva.Stage({
       container: 'konvaContainer',
       width,
       height,
+      // x: window.screenX,
+      // y: window.screenY
     });
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
     this.addLineListeners();
   }
+
+
+
   addLineListeners() {
     const component = this;
     let rect: Konva.Rect;
@@ -112,10 +120,18 @@ export class KonvaShapeComponent implements OnInit {
       // }
       const crop = {
         x: lastNode.attrs.x,
-        y: lastNode.attrs.y + 10,
+        y: lastNode.attrs.y,
         width: lastNode.attrs.width,
         height: lastNode.attrs.height,
       };
+      // const croppedRect = lastNode.toCanvas({
+      //   callback(img) {
+      //     console.log(img);
+      //   }
+      // });
+      // const i = croppedRect.toDataURL();
+      // console.log(croppedRect);
+      // console.log(i);
 
       component.layer.draw();
       component.makeClientCrop(crop);
@@ -190,44 +206,37 @@ export class KonvaShapeComponent implements OnInit {
   loadImage(src) {
     const imageObj = new Image();
     imageObj.src = src;
-    const width = this.parentEl.clientWidth * 0.9;
-    const height = this.parentEl.clientHeight * 0.9;
+    const width = this.stage.width();
+    const height = this.stage.height();
+
     const img = new Konva.Image({
       image: imageObj,
-      x: 0,
-      y: 0,
       width,
       height,
       transformsEnabled: 'none',
-      id: 'imageNode'
-    });
-    img.scale({
-      x: 2,
-      y: 3
+      id: 'imageNode',
     });
     this.layer.add(img);
-    // this.layer.no
     this.layer.batchDraw();
   }
-
   async makeClientCrop(crop) {
-    // console.log("this.imageRefs.current.image: ", this.imageRefs);
-    const imageNode = this.layer.find('Image');
-    const image = imageNode[imageNode.length - 1];
+    const imageNodes = this.layer.find('Image');
+    const image = imageNodes[imageNodes.length - 1];
     if (image.attrs.image.src != null && crop.width && crop.height) {
       const croppedImageUrl = await this.getCroppedImg(
         image.attrs.image,
         crop,
         'newFile.jpeg'
       );
-      console.log(croppedImageUrl);
+      this.aService.postImage(croppedImageUrl);
     }
   }
 
+  // tslint:disable-next-line: variable-name
   getCroppedImg(image, crop, _fileName) {
     const canvas = document.createElement('canvas');
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
+    const scaleX = image.naturalWidth / this.stage.width();
+    const scaleY = image.naturalHeight / this.stage.height();
     canvas.width = crop.width;
     canvas.height = crop.height;
     const ctx = canvas.getContext('2d');
@@ -243,7 +252,8 @@ export class KonvaShapeComponent implements OnInit {
       crop.width,
       crop.height
     );
-    const imgBlob = canvas.toDataURL('image/jpeg');
+    const imgBlob = canvas.toDataURL('image/png');
     return imgBlob;
   }
+
 }

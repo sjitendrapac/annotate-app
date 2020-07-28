@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm, FormGroup, FormBuilder } from '@angular/forms';
-import { MatPaginator } from '@angular/material/paginator';
+// import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { AnnotationdataService } from '../services/annotationdata.service';
@@ -25,7 +25,7 @@ export class AnnotateComponent implements OnInit {
   // @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<any>;
-  public dataSource = new MatTableDataSource<any>();
+  dataSource = new MatTableDataSource<any>();
 
   displayedColumns = ['label', 'type', 'text'];
 
@@ -92,7 +92,6 @@ export class AnnotateComponent implements OnInit {
     console.log('textArray bef: ', textArray);
     textArray.push(this.obj);
     console.log('textArray aft: ', textArray);
-    // textArray = this.array.slice();
     this.dataSource.data = textArray.slice();
     this.uploadForm.reset();
   }

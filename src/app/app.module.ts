@@ -5,19 +5,32 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { KonvaShapeComponent } from './konva-shape/konva-shape.component';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatGridListModule } from '@angular/material/grid-list';
 import { RectangleService } from './services/rectangle.service';
 import { AnnotateComponent } from './annotate/annotate.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule } from '@angular/material/sort';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { NavComponent } from './nav/nav.component';
+import { LayoutModule } from '@angular/cdk/layout';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatListModule } from '@angular/material/list';
+import { ModalComponent } from './modal/modal.component';
+import { UploadComponent } from './upload/upload.component';
+import { ReviewComponent } from './review/review.component';
 
 @NgModule({
-  declarations: [AppComponent, KonvaShapeComponent, AnnotateComponent],
+  declarations: [AppComponent, KonvaShapeComponent, AnnotateComponent, NavComponent, ModalComponent, UploadComponent, ReviewComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -29,7 +42,16 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatSortModule,
     MatInputModule,
     MatSelectModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule,
+    MatIconModule,
+    MatCardModule,
+    MatExpansionModule,
+    LayoutModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatDialogModule,
+    MatListModule
   ],
   providers: [RectangleService],
   bootstrap: [AppComponent],

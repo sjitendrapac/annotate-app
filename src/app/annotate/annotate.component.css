@@ -1,3 +1,19 @@
 .full-width-table {
   width: 100%;
 }
+mat-card {
+  background-color: #3c4345;
+  color: #ffffff;
+}
+.accordion {
+  background-color: #1f2122;
+  color: #ffffff;
+}
+
+mat-expansion-panel {
+  border: solid 3px #349388;
+  background-color: #1f2122;
+}
+.mat-expansion-panel-header-title {
+  color: #ffffff;
+}

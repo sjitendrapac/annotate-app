@@ -24,6 +24,7 @@
               "src/assets"
             ],
             "styles": [
+              "./src/app/candy-app-theme.scss",
               "./src/styles.css",
               "./node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
@@ -89,6 +90,7 @@
               "src/assets"
             ],
             "styles": [
+              "./src/app/candy-app-theme.scss",
               "src/styles.css",
               "./node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],

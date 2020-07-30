@@ -2,6 +2,9 @@ import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import Konva from 'konva';
 import { RectangleService } from '../services/rectangle.service';
 import { AnnotationdataService } from '../services/annotationdata.service';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ModalComponent } from '../modal/modal.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-konva-shape',
@@ -10,7 +13,8 @@ import { AnnotationdataService } from '../services/annotationdata.service';
 })
 export class KonvaShapeComponent implements OnInit {
   @ViewChild('konvaContainer') k: any;
-  @Input() imageSrc: Blob;
+  // @Input() imageSrc: Blob;
+  imageSrc: string;
   parentEl: Element;
 
   startPos: any = {
@@ -25,27 +29,35 @@ export class KonvaShapeComponent implements OnInit {
   erase = false;
   rectSelected = false;
   transformers: Konva.Transformer[] = [];
+  subscription: Subscription;
 
   constructor(
     private RectService: RectangleService,
     private el: ElementRef,
+    public matDialog: MatDialog,
     private aService: AnnotationdataService
   ) {
-    aService.missionConfirmed$.subscribe();
+    console.log('contructor');
+    this.subscription = aService.imageLoaded$.subscribe(
+      src => {
+        console.log('src: ', src);
+        this.imageSrc = src;
+        this.loadImage(this.imageSrc);
+      });
   }
 
   ngOnInit() {
-    this.parentEl = this.el.nativeElement.offsetParent;
+    this.parentEl = this.el.nativeElement;
+    console.log(this.imageSrc);
     this.setupKonva();
-    this.loadImage(this.imageSrc);
   }
 
   setupKonva() {
-    const width = this.parentEl.clientWidth;
-    const height = this.parentEl.clientHeight * 0.8;
-    // const width = window.innerWidth * 0.9;
-    // const height = window.innerHeight;
-
+    const width = this.parentEl.children[0].clientWidth;
+    const height = this.parentEl.children[0].clientHeight;
+    console.log(this.parentEl);
+    console.log(this.parentEl.parentElement.offsetHeight);
+    console.log(this.parentEl.parentElement.offsetLeft);
     this.stage = new Konva.Stage({
       container: 'konvaContainer',
       width,
@@ -135,6 +147,8 @@ export class KonvaShapeComponent implements OnInit {
 
       component.layer.draw();
       component.makeClientCrop(crop);
+      component.openModal(crop);
+
     });
     // and core function - drawing
     this.stage.on('mousemove touchmove', () => {
@@ -187,7 +201,7 @@ export class KonvaShapeComponent implements OnInit {
       }
     });
   }
-  addDeleteListener(shape: import("konva/types/Stage").Stage | import("konva/types/Shape").Shape<import("konva/types/Shape").ShapeConfig>) {
+  addDeleteListener(shape: import('konva/types/Stage').Stage | import('konva/types/Shape').Shape<import('konva/types/Shape').ShapeConfig>) {
     const component = this;
     window.addEventListener('keydown', (e) => {
       if (e.keyCode === 46) {
@@ -204,21 +218,49 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   loadImage(src) {
+    console.log('inside loadimage');
     const imageObj = new Image();
     imageObj.src = src;
-    const width = this.stage.width();
-    const height = this.stage.height();
+    if (imageObj.naturalHeight && imageObj.naturalWidth) {
 
-    const img = new Konva.Image({
-      image: imageObj,
-      width,
-      height,
-      transformsEnabled: 'none',
-      id: 'imageNode',
-    });
-    this.layer.add(img);
-    this.layer.batchDraw();
+      const w = imageObj.naturalWidth;
+      const h = imageObj.naturalHeight;
+      const padding = 10;
+      const targetW = this.stage.width() - (2 * padding);
+      const targetH = this.stage.height() - (2 * padding);
+
+      // compute the ratios of image dimensions to aperture dimensions
+      const widthFit = targetW / w;
+      const heightFit = targetH / h;
+
+      // compute a scale for best fit and apply it
+      let scale = (widthFit > heightFit) ? heightFit : widthFit;
+
+      console.log(widthFit, heightFit);
+      console.log(scale);
+      console.log(w * scale, h * scale);
+      scale = 0.7;
+      console.log(scale);
+      console.log(w * scale, h * scale);
+
+      const img = new Konva.Image({
+        image: imageObj,
+        x: this.stage.width() / 2,
+        y: this.stage.height() / 2,
+        width: w * scale,
+        height: h * scale,
+        transformsEnabled: 'none',
+        id: 'imageNode',
+      });
+      this.layer.add(img);
+      this.layer.batchDraw();
+    }
+    // this.stage.width(w * scale);
+    // this.stage.height(h * scale);
+    // this.stage.scale({ x: scale, y: scale });
+    // this.stage.draw();
   }
+
   async makeClientCrop(crop) {
     const imageNodes = this.layer.find('Image');
     const image = imageNodes[imageNodes.length - 1];
@@ -228,7 +270,12 @@ export class KonvaShapeComponent implements OnInit {
         crop,
         'newFile.jpeg'
       );
-      this.aService.postImage(croppedImageUrl);
+      this.aService.postImage(croppedImageUrl).subscribe(res => {
+        console.log(res);
+      }, error => {
+        // alert(error);
+        console.log(error);
+      });
     }
   }
 
@@ -254,6 +301,22 @@ export class KonvaShapeComponent implements OnInit {
     );
     const imgBlob = canvas.toDataURL('image/png');
     return imgBlob;
+  }
+
+  openModal(crop) {
+    const dialogConfig = new MatDialogConfig();
+    // The user can't close the dialog by clicking outside its body
+    // dialogConfig.disableClose = true;
+    dialogConfig.id = 'modal-component';
+    dialogConfig.width = '200px';
+    dialogConfig.height = '100px';
+    // dialogConfig.position = {
+    //   top: crop.y,
+    //   left: crop.x,
+    // }
+
+    // https://material.angular.io/components/dialog/overview
+    const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
   }
 
 }

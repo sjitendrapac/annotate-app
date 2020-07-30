@@ -1,39 +1,4 @@
-<div class="container-flex h-100">
-  <mat-toolbar>
-    <div class="logo" style="float: left;">
-      <a href="/"> Annotate-App </a>
-    </div>
-    <span class="fillSpace"></span>
-  </mat-toolbar>
-
-  <mat-grid-list cols="2" rowHeight="1:1" class=" h-100 w-100">
-    <mat-grid-tile colspan="1" style="border:1px solid grey;">
-      <mat-grid-tile-header>
-        <input type="file" accept="image/*" (change)="onSelectFile($event)" />
-      </mat-grid-tile-header>
-      <app-konva-shape id="konvaContainer" [imageSrc]="imageSrc" *ngIf="imageLoaded">
-      </app-konva-shape>
-    </mat-grid-tile>
-    <mat-grid-tile colspan="1" style="border:1px solid grey;">
-      <mat-grid-tile-header>Add Data</mat-grid-tile-header>
-      <app-annotate class="fullWidth"></app-annotate>
-    </mat-grid-tile>
-  </mat-grid-list>
+<div style="background-color: #1F2122;" class="h-100">
+  <app-nav class="mat-elevation-z6"></app-nav>
+  <router-outlet></router-outlet>
 </div>
-
-<!-- <div>
-    <div class="row justify-content-center h-100 ">
-      <div class="col-md-1"></div>
-      <div class="col-md-5 justify-content-center" style="min-height:600px; border:1px solid grey;">
-        <div class="row">
-          <input class="input" type="file" accept="image/*" (change)="onSelectFile($event)" />
-        </div>
-        <app-konva-shape class="component" id="konvaContainer" [imageSrc]="imageSrc" *ngIf="imageLoaded">
-        </app-konva-shape>
-      </div>
-      <div class="col-md-5 justify-content-center h-100" style="min-height:600px; border:1px solid grey;">
-        <app-annotate></app-annotate>
-      </div>
-      <div class="col-md-1"></div>
-    </div>
-  </div> -->

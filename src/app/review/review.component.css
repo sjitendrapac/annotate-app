@@ -13,8 +13,8 @@
   flex: 1 1 auto;
 }
 /* .fillHeight {
-  flex: 1 1 auto;
-} */
+    flex: 1 1 auto;
+  } */
 
 .fullWidth {
   width: 90%;
@@ -22,8 +22,8 @@
 }
 
 /* a {
-  padding: 5px;
-} */
+    padding: 5px;
+  } */
 
 mat-card {
   background-color: #3c4345;

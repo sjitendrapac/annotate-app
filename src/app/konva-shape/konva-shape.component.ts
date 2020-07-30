@@ -55,7 +55,9 @@ export class KonvaShapeComponent implements OnInit {
   setupKonva() {
     const width = this.parentEl.children[0].clientWidth;
     const height = this.parentEl.children[0].clientHeight;
-
+    console.log(this.parentEl);
+    console.log(this.parentEl.parentElement.offsetHeight);
+    console.log(this.parentEl.parentElement.offsetLeft);
     this.stage = new Konva.Stage({
       container: 'konvaContainer',
       width,

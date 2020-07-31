@@ -213,13 +213,21 @@ export class KonvaShapeComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    // console.log("ngondestroy");
+    localStorage.clear();
+  }
+
   loadImage(src) {
     console.log('inside loadimage');
 
-
     const imageObj = new Image();
     imageObj.src = src;
-    if (imageObj.naturalHeight && imageObj.naturalWidth) {
+    imageObj.onload = (() => {
+      console.log(imageObj.naturalHeight);
+      console.log(imageObj.naturalWidth);
+
+      // if (imageObj.naturalHeight && imageObj.naturalWidth) {
 
       const w = imageObj.naturalWidth;
       const h = imageObj.naturalHeight;
@@ -234,12 +242,12 @@ export class KonvaShapeComponent implements OnInit {
       // compute a scale for best fit and apply it
       let scale = (widthFit > heightFit) ? heightFit : widthFit;
 
-      console.log(widthFit, heightFit);
-      console.log(scale);
-      console.log(w * scale, h * scale);
-      scale = 0.7;
-      console.log(scale);
-      console.log(w * scale, h * scale);
+      // console.log(widthFit, heightFit);
+      // console.log(scale);
+      // console.log(w * scale, h * scale);
+      // scale = 0.7;
+      // console.log(scale);
+      // console.log(w * scale, h * scale);
 
       const img = new Konva.Image({
         image: imageObj,
@@ -252,7 +260,7 @@ export class KonvaShapeComponent implements OnInit {
       });
       this.layer.add(img);
       this.layer.batchDraw();
-    }
+    });
     // this.stage.width(w * scale);
     // this.stage.height(h * scale);
     // this.stage.scale({ x: scale, y: scale });

@@ -28,9 +28,19 @@ import { MatListModule } from '@angular/material/list';
 import { ModalComponent } from './modal/modal.component';
 import { UploadComponent } from './upload/upload.component';
 import { ReviewComponent } from './review/review.component';
+import { LoginPageComponent } from './login-page/login-page.component';
 
 @NgModule({
-  declarations: [AppComponent, KonvaShapeComponent, AnnotateComponent, NavComponent, ModalComponent, UploadComponent, ReviewComponent],
+  declarations: [
+    AppComponent,
+    KonvaShapeComponent,
+    AnnotateComponent,
+    NavComponent,
+    ModalComponent,
+    UploadComponent,
+    ReviewComponent,
+    LoginPageComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

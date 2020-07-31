@@ -11,11 +11,9 @@ import { environment } from 'src/environments/environment';
 export class AnnotationdataService {
   // Observable string sources
   private missionAnnouncedSource = new Subject<string>();
-  private imageLoadedSource = new Subject<string>();
 
   // Observable string streams
   missionAnnounced$ = this.missionAnnouncedSource.asObservable();
-  imageLoaded$ = this.imageLoadedSource.asObservable();
 
   constructor(private http: HttpClient) { }
   // Service message commands
@@ -23,11 +21,6 @@ export class AnnotationdataService {
     this.missionAnnouncedSource.next(mission);
   }
 
-  loadImage(imageSrc: string) {
-    console.log('annotatiodataservice loadimage', imageSrc);
-    this.imageLoadedSource.next(imageSrc);
-    // this.KonvaShapeComponent.loadImage(imageSrc);
-  }
 
   // postImage(croppedImage): void {
   //   console.log(croppedImage);

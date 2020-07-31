@@ -26,10 +26,11 @@ export class UploadComponent implements OnInit {
       });
       reader.addEventListener('loadend', () => {
         this.imageLoaded = true;
-        console.log(
-          'image loadend', this.imageSrc
-        );
-        this.aService.loadImage(this.imageSrc);
+        // console.log(
+        //   'image loadend', this.imageSrc
+        // );
+        // this.aService.loadImage(this.imageSrc);
+        localStorage.setItem('file', this.imageSrc);
         this.router.navigate(['review']);
       });
       reader.readAsDataURL(e.target.files[0]);

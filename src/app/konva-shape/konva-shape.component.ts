@@ -38,18 +38,14 @@ export class KonvaShapeComponent implements OnInit {
     private aService: AnnotationdataService
   ) {
     console.log('contructor');
-    this.subscription = aService.imageLoaded$.subscribe(
-      src => {
-        console.log('src: ', src);
-        this.imageSrc = src;
-        this.loadImage(this.imageSrc);
-      });
   }
 
   ngOnInit() {
     this.parentEl = this.el.nativeElement;
-    console.log(this.imageSrc);
     this.setupKonva();
+    // console.log(localStorage.getItem('file'));
+    this.imageSrc = localStorage.getItem('file');
+    this.loadImage(this.imageSrc);
   }
 
   setupKonva() {
@@ -219,6 +215,8 @@ export class KonvaShapeComponent implements OnInit {
 
   loadImage(src) {
     console.log('inside loadimage');
+
+
     const imageObj = new Image();
     imageObj.src = src;
     if (imageObj.naturalHeight && imageObj.naturalWidth) {
@@ -307,13 +305,14 @@ export class KonvaShapeComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     // The user can't close the dialog by clicking outside its body
     // dialogConfig.disableClose = true;
+    // leftPos = 20%;
     dialogConfig.id = 'modal-component';
     dialogConfig.width = '200px';
     dialogConfig.height = '100px';
-    // dialogConfig.position = {
-    //   top: crop.y,
-    //   left: crop.x,
-    // }
+    dialogConfig.position = {
+      top: crop.y,
+      left: crop.x,
+    }
 
     // https://material.angular.io/components/dialog/overview
     const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);

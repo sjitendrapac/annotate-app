@@ -5,6 +5,8 @@ import { AnnotationdataService } from '../services/annotationdata.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ModalComponent } from '../modal/modal.component';
 import { Subscription } from 'rxjs';
+import PDFJS from 'pdfjs-dist/build/pdf';
+import PDFSWorker from 'pdfjs-dist/build/pdf.worker.entry';
 
 @Component({
   selector: 'app-konva-shape',
@@ -13,6 +15,7 @@ import { Subscription } from 'rxjs';
 })
 export class KonvaShapeComponent implements OnInit {
   @ViewChild('konvaContainer') k: any;
+  // @ViewChild('testCanvas') k: any;
   // @Input() imageSrc: Blob;
   imageSrc: string;
   parentEl: Element;
@@ -45,7 +48,47 @@ export class KonvaShapeComponent implements OnInit {
     this.setupKonva();
     // console.log(localStorage.getItem('file'));
     this.imageSrc = localStorage.getItem('file');
+    if(this.imageSrc.indexOf("application/pdf") != -1){
+    this.createPdfToImage();
+    }else{
     this.loadImage(this.imageSrc);
+    }
+  }
+
+  createPdfToImage(){
+    // PDFJS.disableWorker = true;
+    PDFJS.GlobalWorkerOptions.workerSrc = PDFSWorker;
+
+    PDFJS.getDocument(this.imageSrc).promise.then(pdf => {
+      //
+      // Fetch the first page
+      //
+      pdf.getPage(1).then(page =>{
+        var scale = 1.5;
+        var viewport = page.getViewport({scale:scale});
+
+        //
+        // Prepare canvas using PDF page dimensions
+        const canvas = document.createElement('canvas');
+        // var canvas = document.getElementById('the-canvas');
+        var context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        //
+        // Render PDF page into canvas context
+        //
+        var task = page.render({canvasContext: context, viewport: viewport})
+        var data;
+        task.promise.then(() => {
+          data  = canvas.toDataURL('image/jpeg');
+          this.loadImage(data);
+          // console.log("new data: "+ data);
+        });
+      });
+    }, function(error){
+      console.log(error);
+    });
   }
 
   setupKonva() {
@@ -58,8 +101,8 @@ export class KonvaShapeComponent implements OnInit {
       container: 'konvaContainer',
       width,
       height,
-      // x: window.screenX,
-      // y: window.screenY
+       x: window.screenX,
+      y: window.screenY
     });
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
@@ -261,10 +304,7 @@ export class KonvaShapeComponent implements OnInit {
       this.layer.add(img);
       this.layer.batchDraw();
     });
-    // this.stage.width(w * scale);
-    // this.stage.height(h * scale);
-    // this.stage.scale({ x: scale, y: scale });
-    // this.stage.draw();
+
   }
 
   async makeClientCrop(crop) {
@@ -288,6 +328,7 @@ export class KonvaShapeComponent implements OnInit {
   // tslint:disable-next-line: variable-name
   getCroppedImg(image, crop, _fileName) {
     const canvas = document.createElement('canvas');
+    
     const scaleX = image.naturalWidth / this.stage.width();
     const scaleY = image.naturalHeight / this.stage.height();
     canvas.width = crop.width;

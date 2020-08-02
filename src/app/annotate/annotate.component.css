@@ -4,6 +4,7 @@
 mat-card {
   background-color: #3c4345;
   color: #ffffff;
+  margin: 3px;
 }
 .accordion {
   background-color: #1f2122;

@@ -1,10 +1,52 @@
-<!-- <p>upload works!</p> -->
 <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-8 h-100">
         <mat-card>
-            <input class="input" type="file" (change)="onSelectFile($event)" />
+            <div class="row w-100 justify-content-center">
+                <div class="row w-100 justify-content-center">
+                    <h2>Templates</h2>
+                </div>
+                <div class="row w-100" style="justify-content: flex-end;">
+                    <button mat-icon-button matTooltip="Add Template" style="background-color:#349388; color: #ffffff;"
+                        (click)="addTemplate()">
+                        <!-- Add Template -->
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    <input *ngIf="showUpload" class="input" type="file" (change)="onSelectFile($event)" />
+                </div>
+                <table [dataSource]="dataSource" mat-table class="full-width-table " matSort aria-label="Elements">
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell color="primary" *matHeaderCellDef mat-sort-header>Template Name</th>
+                        <td mat-cell color="primary" *matCellDef="let row">{{row.name}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="id">
+                        <th mat-header-cell color="primary" *matHeaderCellDef mat-sort-header>Template Id</th>
+                        <td mat-cell color="primary" *matCellDef="let row">{{row.id}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="operations">
+                        <th mat-header-cell color="primary" *matHeaderCellDef mat-sort-header>Operations</th>
+                        <td mat-cell *matCellDef="let element">
+                            <button mat-icon-button style="color: #ffffff;" (click)="onRowClicked(element)">
+                                <mat-icon>visibility</mat-icon>
+                            </button>
+                            <button mat-icon-button style="color: #ffffff;" (click)="deleteWorksheet(element)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row style="color: #349388;" *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row style="color: #349388;" *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </div>
+
         </mat-card>
     </div>
     <div class="col-md-2"></div>
+
+    <!-- <mat-paginator #paginator [length]="dataSource?.data.length" [pageIndex]="0" [pageSize]="50"
+        [pageSizeOptions]="[25, 50, 100, 250]">
+    </mat-paginator> -->
 </div>

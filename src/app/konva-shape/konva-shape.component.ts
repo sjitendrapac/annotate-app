@@ -5,8 +5,12 @@ import { AnnotationdataService } from '../services/annotationdata.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ModalComponent } from '../modal/modal.component';
 import { Subscription } from 'rxjs';
+<<<<<<< HEAD
+// import tippy from 'tippy.js';
+=======
 import PDFJS from 'pdfjs-dist/build/pdf';
 import PDFSWorker from 'pdfjs-dist/build/pdf.worker.entry';
+>>>>>>> cbe1b7c4ebfe150472c5f1987a149b8e2a6e88ca
 
 @Component({
   selector: 'app-konva-shape',
@@ -48,14 +52,14 @@ export class KonvaShapeComponent implements OnInit {
     this.setupKonva();
     // console.log(localStorage.getItem('file'));
     this.imageSrc = localStorage.getItem('file');
-    if(this.imageSrc.indexOf("application/pdf") != -1){
-    this.createPdfToImage();
-    }else{
-    this.loadImage(this.imageSrc);
+    if (this.imageSrc.indexOf("application/pdf") != -1) {
+      this.createPdfToImage();
+    } else {
+      this.loadImage(this.imageSrc);
     }
   }
 
-  createPdfToImage(){
+  createPdfToImage() {
     // PDFJS.disableWorker = true;
     PDFJS.GlobalWorkerOptions.workerSrc = PDFSWorker;
 
@@ -63,9 +67,9 @@ export class KonvaShapeComponent implements OnInit {
       //
       // Fetch the first page
       //
-      pdf.getPage(1).then(page =>{
+      pdf.getPage(1).then(page => {
         var scale = 1.5;
-        var viewport = page.getViewport({scale:scale});
+        var viewport = page.getViewport({ scale: scale });
 
         //
         // Prepare canvas using PDF page dimensions
@@ -78,15 +82,15 @@ export class KonvaShapeComponent implements OnInit {
         //
         // Render PDF page into canvas context
         //
-        var task = page.render({canvasContext: context, viewport: viewport})
+        var task = page.render({ canvasContext: context, viewport: viewport })
         var data;
         task.promise.then(() => {
-          data  = canvas.toDataURL('image/jpeg');
+          data = canvas.toDataURL('image/jpeg');
           this.loadImage(data);
           // console.log("new data: "+ data);
         });
       });
-    }, function(error){
+    }, function (error) {
       console.log(error);
     });
   }
@@ -94,14 +98,14 @@ export class KonvaShapeComponent implements OnInit {
   setupKonva() {
     const width = this.parentEl.children[0].clientWidth;
     const height = this.parentEl.children[0].clientHeight;
-    console.log(this.parentEl);
-    console.log(this.parentEl.parentElement.offsetHeight);
-    console.log(this.parentEl.parentElement.offsetLeft);
+    // console.log(this.parentEl);
+    // console.log(this.parentEl.parentElement.offsetHeight);
+    // console.log(this.parentEl.parentElement.offsetLeft);
     this.stage = new Konva.Stage({
       container: 'konvaContainer',
       width,
       height,
-       x: window.screenX,
+      x: window.screenX,
       y: window.screenY
     });
     this.layer = new Konva.Layer();
@@ -186,7 +190,7 @@ export class KonvaShapeComponent implements OnInit {
 
       component.layer.draw();
       component.makeClientCrop(crop);
-      component.openModal(crop);
+      // component.openModal(crop);
 
     });
     // and core function - drawing
@@ -263,7 +267,6 @@ export class KonvaShapeComponent implements OnInit {
 
   loadImage(src) {
     console.log('inside loadimage');
-
     const imageObj = new Image();
     imageObj.src = src;
     imageObj.onload = (() => {
@@ -304,7 +307,10 @@ export class KonvaShapeComponent implements OnInit {
       this.layer.add(img);
       this.layer.batchDraw();
     });
-
+    // this.stage.width(w * scale);
+    // this.stage.height(h * scale);
+    // this.stage.scale({ x: scale, y: scale });
+    // this.stage.draw();
   }
 
   async makeClientCrop(crop) {
@@ -328,7 +334,7 @@ export class KonvaShapeComponent implements OnInit {
   // tslint:disable-next-line: variable-name
   getCroppedImg(image, crop, _fileName) {
     const canvas = document.createElement('canvas');
-    
+
     const scaleX = image.naturalWidth / this.stage.width();
     const scaleY = image.naturalHeight / this.stage.height();
     canvas.width = crop.width;
@@ -350,21 +356,22 @@ export class KonvaShapeComponent implements OnInit {
     return imgBlob;
   }
 
-  openModal(crop) {
-    const dialogConfig = new MatDialogConfig();
-    // The user can't close the dialog by clicking outside its body
-    // dialogConfig.disableClose = true;
-    // leftPos = 20%;
-    dialogConfig.id = 'modal-component';
-    dialogConfig.width = '200px';
-    dialogConfig.height = '100px';
-    dialogConfig.position = {
-      top: crop.y,
-      left: crop.x,
-    }
 
-    // https://material.angular.io/components/dialog/overview
-    const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
-  }
+  // openModal(crop) {
+  //   const dialogConfig = new MatDialogConfig();
+  //   // The user can't close the dialog by clicking outside its body
+  //   // dialogConfig.disableClose = true;
+  //   // leftPos = 20%;
+  //   dialogConfig.id = 'modal-component';
+  //   dialogConfig.width = '200px';
+  //   dialogConfig.height = '100px';
+  //   // dialogConfig.position = {
+  //   //   top: crop.y,
+  //   //   left: crop.x,
+  //   // };
+
+  //   // https://material.angular.io/components/dialog/overview
+  //   const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
+  // }
 
 }

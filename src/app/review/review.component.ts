@@ -1,3 +1,4 @@
+import { AnnotationdataService } from './../services/annotationdata.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -8,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class ReviewComponent implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private aService: AnnotationdataService) { }
 
   ngOnInit(): void {
   }
@@ -18,7 +19,7 @@ export class ReviewComponent implements OnInit {
   }
 
   addLabel() {
-    console.log('Add Label to the list');
+    this.aService.addField();
   }
 
 }

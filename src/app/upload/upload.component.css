@@ -29,3 +29,13 @@ mat-card {
   background-color: #3c4345;
   color: #ffffff;
 }
+
+.full-width-table {
+  width: 100%;
+}
+
+.mat-cell,
+.mat-header-cell {
+  background-color: #3c4345;
+  color: #ffffff;
+}

@@ -5,6 +5,7 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 // import { AnnotateTableDataSource, AnnotateTableItem } from '../annotate-table/annotate-table-datasource';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,6 +15,11 @@ export class AnnotationdataService {
 
   // Observable string streams
   missionAnnounced$ = this.missionAnnouncedSource.asObservable();
+  data = [
+    { label: 'label1', type: 'numeric', text: '' },
+    { label: 'label2', type: 'numeric', text: '' },
+    { label: 'label3', type: 'numeric', text: '' }
+  ];
 
   constructor(private http: HttpClient) { }
   // Service message commands
@@ -21,6 +27,13 @@ export class AnnotationdataService {
     this.missionAnnouncedSource.next(mission);
   }
 
+  addField() {
+    this.data.push({ label: '', type: '', text: '' });
+  }
+
+  getData() {
+    return this.data;
+  }
 
   // postImage(croppedImage): void {
   //   console.log(croppedImage);

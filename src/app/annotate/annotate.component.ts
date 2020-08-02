@@ -6,14 +6,6 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { AnnotationdataService } from '../services/annotationdata.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 
-export interface TextObject {
-  label: any;
-  type: any;
-  text: any;
-}
-
-const textArray: TextObject[] = [];
-
 @Component({
   selector: 'app-annotate',
   templateUrl: './annotate.component.html',
@@ -23,35 +15,23 @@ const textArray: TextObject[] = [];
 
 export class AnnotateComponent implements OnInit {
   // @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatTable) table: MatTable<any>;
   dataSource = new MatTableDataSource<any>();
 
   displayedColumns = ['label', 'type', 'text'];
 
-  @ViewChild('f', { static: true }) signupForm: NgForm;
-
-  types = [
-    { value: 'Number', viewValue: 'Number' },
-    { value: 'Single-Line Text', viewValue: 'Singe-Line Text' },
-    { value: 'Multi-Line Text', viewValue: 'Multi-Line Text' }
-  ];
+  templateFields: FormGroup;
 
   rectReady = false;
-  dataAdded = false;
-
-  uploadForm: FormGroup;
-
-  obj: TextObject = {
-    label: '',
-    type: '',
-    text: '',
-  };
-
-  array: TextObject[] = [];
 
   subscription: Subscription;
   mission = '<no mission announced>';
+
+  data = [];
+
+  validTypes = [
+    { type: 'Numeric' },
+    { type: 'Alphanumeric' }
+  ];
 
   constructor(private fb: FormBuilder, private aService: AnnotationdataService) {
     this.subscription = aService.missionAnnounced$.subscribe(
@@ -61,15 +41,17 @@ export class AnnotateComponent implements OnInit {
       });
   }
 
+
   ngOnInit() {
-    this.uploadForm = this.fb.group({
+    this.templateFields = this.fb.group({
       label: [''],
-      name: [''],
+      text: [''],
       type: [''],
     });
-    this.dataSource.data = textArray;
-    this.dataSource.sort = this.sort;
-    // this.dataSource.paginator = this.paginator;
+  }
+
+  ngDoCheck() {
+    this.data = this.aService.getData();
   }
 
   // tslint:disable-next-line: use-lifecycle-interface
@@ -79,20 +61,10 @@ export class AnnotateComponent implements OnInit {
   }
 
   // tslint:disable-next-line: typedef
-  get f() { return this.uploadForm.controls; }
+  // get f() { return this.uploadForm.controls; }
 
-  onSubmit(f) {
-    console.log('onSubmit');
-    console.log(f);
-    this.dataAdded = true;
-    this.rectReady = false;
-    this.obj.label = f.label.value;
-    this.obj.type = f.type.value;
-    console.log(this.obj);
-    console.log('textArray bef: ', textArray);
-    textArray.push(this.obj);
-    console.log('textArray aft: ', textArray);
-    this.dataSource.data = textArray.slice();
-    this.uploadForm.reset();
+  onSubmit() {
+    console.log(this.templateFields.controls);
+    // API Call to confirm field data.
   }
 }

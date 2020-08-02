@@ -5,6 +5,7 @@ import { AnnotationdataService } from '../services/annotationdata.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ModalComponent } from '../modal/modal.component';
 import { Subscription } from 'rxjs';
+import tippy from 'tippy.js';
 
 @Component({
   selector: 'app-konva-shape',
@@ -51,9 +52,9 @@ export class KonvaShapeComponent implements OnInit {
   setupKonva() {
     const width = this.parentEl.children[0].clientWidth;
     const height = this.parentEl.children[0].clientHeight;
-    console.log(this.parentEl);
-    console.log(this.parentEl.parentElement.offsetHeight);
-    console.log(this.parentEl.parentElement.offsetLeft);
+    // console.log(this.parentEl);
+    // console.log(this.parentEl.parentElement.offsetHeight);
+    // console.log(this.parentEl.parentElement.offsetLeft);
     this.stage = new Konva.Stage({
       container: 'konvaContainer',
       width,
@@ -143,7 +144,7 @@ export class KonvaShapeComponent implements OnInit {
 
       component.layer.draw();
       component.makeClientCrop(crop);
-      component.openModal(crop);
+      // component.openModal(crop);
 
     });
     // and core function - drawing
@@ -220,7 +221,6 @@ export class KonvaShapeComponent implements OnInit {
 
   loadImage(src) {
     console.log('inside loadimage');
-
     const imageObj = new Image();
     imageObj.src = src;
     imageObj.onload = (() => {
@@ -309,21 +309,22 @@ export class KonvaShapeComponent implements OnInit {
     return imgBlob;
   }
 
-  openModal(crop) {
-    const dialogConfig = new MatDialogConfig();
-    // The user can't close the dialog by clicking outside its body
-    // dialogConfig.disableClose = true;
-    // leftPos = 20%;
-    dialogConfig.id = 'modal-component';
-    dialogConfig.width = '200px';
-    dialogConfig.height = '100px';
-    dialogConfig.position = {
-      top: crop.y,
-      left: crop.x,
-    }
 
-    // https://material.angular.io/components/dialog/overview
-    const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
-  }
+  // openModal(crop) {
+  //   const dialogConfig = new MatDialogConfig();
+  //   // The user can't close the dialog by clicking outside its body
+  //   // dialogConfig.disableClose = true;
+  //   // leftPos = 20%;
+  //   dialogConfig.id = 'modal-component';
+  //   dialogConfig.width = '200px';
+  //   dialogConfig.height = '100px';
+  //   // dialogConfig.position = {
+  //   //   top: crop.y,
+  //   //   left: crop.x,
+  //   // };
+
+  //   // https://material.angular.io/components/dialog/overview
+  //   const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
+  // }
 
 }

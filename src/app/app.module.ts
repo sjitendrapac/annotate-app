@@ -29,6 +29,7 @@ import { ModalComponent } from './modal/modal.component';
 import { UploadComponent } from './upload/upload.component';
 import { ReviewComponent } from './review/review.component';
 import { LoginPageComponent } from './login-page/login-page.component';
+import { PdfJsViewerModule } from 'ng2-pdfjs-viewer';
 
 @NgModule({
   declarations: [
@@ -39,10 +40,11 @@ import { LoginPageComponent } from './login-page/login-page.component';
     ModalComponent,
     UploadComponent,
     ReviewComponent,
-    LoginPageComponent
+    LoginPageComponent,
   ],
   imports: [
     BrowserModule,
+    PdfJsViewerModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
@@ -61,7 +63,7 @@ import { LoginPageComponent } from './login-page/login-page.component';
     MatButtonModule,
     MatSidenavModule,
     MatDialogModule,
-    MatListModule
+    MatListModule,
   ],
   providers: [RectangleService],
   bootstrap: [AppComponent],

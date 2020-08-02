@@ -5,12 +5,9 @@ import { AnnotationdataService } from '../services/annotationdata.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ModalComponent } from '../modal/modal.component';
 import { Subscription } from 'rxjs';
-<<<<<<< HEAD
 // import tippy from 'tippy.js';
-=======
 import PDFJS from 'pdfjs-dist/build/pdf';
 import PDFSWorker from 'pdfjs-dist/build/pdf.worker.entry';
->>>>>>> cbe1b7c4ebfe150472c5f1987a149b8e2a6e88ca
 
 @Component({
   selector: 'app-konva-shape',
@@ -23,7 +20,8 @@ export class KonvaShapeComponent implements OnInit {
   // @Input() imageSrc: Blob;
   imageSrc: string;
   parentEl: Element;
-
+  pdfData: String[] = [];
+  pageId = 1;
   startPos: any = {
     x: Number,
     y: Number,
@@ -52,24 +50,25 @@ export class KonvaShapeComponent implements OnInit {
     this.setupKonva();
     // console.log(localStorage.getItem('file'));
     this.imageSrc = localStorage.getItem('file');
-    if (this.imageSrc.indexOf("application/pdf") != -1) {
-      this.createPdfToImage();
-    } else {
-      this.loadImage(this.imageSrc);
+    if(this.imageSrc.indexOf("application/pdf") != -1){
+    this.createPdfToImage();
+    }else{
+    this.loadImage(this.imageSrc);
     }
   }
 
-  createPdfToImage() {
+  createPdfToImage(){
     // PDFJS.disableWorker = true;
     PDFJS.GlobalWorkerOptions.workerSrc = PDFSWorker;
 
-    PDFJS.getDocument(this.imageSrc).promise.then(pdf => {
+    PDFJS.getDocument(this.imageSrc).promise.then(async pdf => {
       //
       // Fetch the first page
       //
-      pdf.getPage(1).then(page => {
+      for(var i=1; i<= pdf.numPages; i++){
+      await pdf.getPage(i).then(async page =>{
         var scale = 1.5;
-        var viewport = page.getViewport({ scale: scale });
+        var viewport = page.getViewport({scale:scale});
 
         //
         // Prepare canvas using PDF page dimensions
@@ -82,25 +81,30 @@ export class KonvaShapeComponent implements OnInit {
         //
         // Render PDF page into canvas context
         //
-        var task = page.render({ canvasContext: context, viewport: viewport })
+        var task = page.render({canvasContext: context, viewport: viewport})
         var data;
-        task.promise.then(() => {
-          data = canvas.toDataURL('image/jpeg');
+        await task.promise.then(async () => {
+          data  = await canvas.toDataURL('image/jpeg');
+          this.pdfData.push(data);
+          if(i==1){
           this.loadImage(data);
           // console.log("new data: "+ data);
+          }
         });
       });
-    }, function (error) {
+    }
+    }, function(error){
       console.log(error);
     });
+    console.log(this.pdfData);
   }
 
   setupKonva() {
     const width = this.parentEl.children[0].clientWidth;
     const height = this.parentEl.children[0].clientHeight;
-    // console.log(this.parentEl);
-    // console.log(this.parentEl.parentElement.offsetHeight);
-    // console.log(this.parentEl.parentElement.offsetLeft);
+    console.log(this.parentEl);
+    console.log(this.parentEl.parentElement.offsetHeight);
+    console.log(this.parentEl.parentElement.offsetLeft);
     this.stage = new Konva.Stage({
       container: 'konvaContainer',
       width,
@@ -190,7 +194,7 @@ export class KonvaShapeComponent implements OnInit {
 
       component.layer.draw();
       component.makeClientCrop(crop);
-      // component.openModal(crop);
+      component.openModal(crop);
 
     });
     // and core function - drawing
@@ -267,6 +271,7 @@ export class KonvaShapeComponent implements OnInit {
 
   loadImage(src) {
     console.log('inside loadimage');
+
     const imageObj = new Image();
     imageObj.src = src;
     imageObj.onload = (() => {
@@ -307,16 +312,13 @@ export class KonvaShapeComponent implements OnInit {
       this.layer.add(img);
       this.layer.batchDraw();
     });
-    // this.stage.width(w * scale);
-    // this.stage.height(h * scale);
-    // this.stage.scale({ x: scale, y: scale });
-    // this.stage.draw();
+
   }
 
   async makeClientCrop(crop) {
     const imageNodes = this.layer.find('Image');
     const image = imageNodes[imageNodes.length - 1];
-    if (image.attrs.image.src != null && crop.width && crop.height) {
+    if (image && image.attrs.image.src != null && crop.width && crop.height) {
       const croppedImageUrl = await this.getCroppedImg(
         image.attrs.image,
         crop,
@@ -334,7 +336,7 @@ export class KonvaShapeComponent implements OnInit {
   // tslint:disable-next-line: variable-name
   getCroppedImg(image, crop, _fileName) {
     const canvas = document.createElement('canvas');
-
+    
     const scaleX = image.naturalWidth / this.stage.width();
     const scaleY = image.naturalHeight / this.stage.height();
     canvas.width = crop.width;
@@ -356,22 +358,31 @@ export class KonvaShapeComponent implements OnInit {
     return imgBlob;
   }
 
+  openModal(crop) {
+    const dialogConfig = new MatDialogConfig();
+    // The user can't close the dialog by clicking outside its body
+    // dialogConfig.disableClose = true;
+    // leftPos = 20%;
+    dialogConfig.id = 'modal-component';
+    dialogConfig.width = '200px';
+    dialogConfig.height = '100px';
+    dialogConfig.position = {
+      top: crop.y,
+      left: crop.x,
+    }
 
-  // openModal(crop) {
-  //   const dialogConfig = new MatDialogConfig();
-  //   // The user can't close the dialog by clicking outside its body
-  //   // dialogConfig.disableClose = true;
-  //   // leftPos = 20%;
-  //   dialogConfig.id = 'modal-component';
-  //   dialogConfig.width = '200px';
-  //   dialogConfig.height = '100px';
-  //   // dialogConfig.position = {
-  //   //   top: crop.y,
-  //   //   left: crop.x,
-  //   // };
+    // https://material.angular.io/components/dialog/overview
+    const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
+  }
 
-  //   // https://material.angular.io/components/dialog/overview
-  //   const modalDialog = this.matDialog.open(ModalComponent, dialogConfig);
-  // }
-
+  loadNextPage(isNextTrue: boolean){
+    console.log(this.pdfData.length)
+    if(isNextTrue && this.pageId < this.pdfData.length){
+    this.pageId++;
+    this.loadImage(this.pdfData[this.pageId])
+    }else if(this.pageId > 0){
+      this.pageId--;
+      this.loadImage(this.pdfData[this.pageId])
+    }
+  }
 }

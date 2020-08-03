@@ -1,5 +1,11 @@
 <!-- <div id="konvaContainer"></div> -->
 <mat-card class="justify-content-center" style="min-height: 600px">
-    <mat-card-subtitle> ./invoice.pdf </mat-card-subtitle>
+    <mat-card-subtitle> invoice </mat-card-subtitle>
+    <div *ngIf = "pdfData.length">
+    <button mat-button style="color: #349388" (click) ="loadNextPage(false)" *ngIf = "pageId > 0">
+        <mat-icon>arrow_left</mat-icon></button> 
+    <button mat-button style="color: #349388" (click) ="loadNextPage(true)" *ngIf = "pageId < 7">
+        <mat-icon>arrow_right</mat-icon></button>
+    </div>
     <mat-card-content id="konvaContainer"></mat-card-content>
 </mat-card>

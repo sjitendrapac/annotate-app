@@ -29,7 +29,7 @@ import { ModalComponent } from './modal/modal.component';
 import { UploadComponent } from './upload/upload.component';
 import { ReviewComponent } from './review/review.component';
 import { LoginPageComponent } from './login-page/login-page.component';
-import { PdfJsViewerModule } from 'ng2-pdfjs-viewer';
+// import { PdfJsViewerModule } from 'ng2-pdfjs-viewer';
 
 @NgModule({
   declarations: [
@@ -44,7 +44,7 @@ import { PdfJsViewerModule } from 'ng2-pdfjs-viewer';
   ],
   imports: [
     BrowserModule,
-    PdfJsViewerModule,
+    // PdfJsViewerModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,

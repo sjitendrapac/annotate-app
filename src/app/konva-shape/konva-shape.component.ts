@@ -18,6 +18,8 @@ export class KonvaShapeComponent implements OnInit {
   @ViewChild('konvaContainer') k: any;
   // @ViewChild('testCanvas') k: any;
   // @Input() imageSrc: Blob;
+
+  @ViewChild('konvaDivId') konvaContainId:any;
   imageSrc: string;
   parentEl: Element;
   pdfData: String[] = [];
@@ -75,8 +77,9 @@ export class KonvaShapeComponent implements OnInit {
         const canvas = document.createElement('canvas');
         // var canvas = document.getElementById('the-canvas');
         var context = canvas.getContext('2d');
-        canvas.height = this.parentEl.children[0].children[1].clientHeight;//viewport.height;
-        canvas.width = this.parentEl.children[0].children[1].clientWidth;//viewport.width;
+        
+        canvas.height = this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
+        canvas.width = this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
 
         //
         // Render PDF page into canvas context

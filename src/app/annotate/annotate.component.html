@@ -5,18 +5,23 @@
         </mat-expansion-panel-header>
         <mat-card *ngFor="let item of data">
             <div class="row w-100 justify-content-center">
-                <form [formGroup]="templateFields" (ngSubmit)="onSubmit()">
-                    <mat-form-field style="width:100px;">
-                        <input style="color: #ffffff;" matInput formControlName="label" placeholder="Label" invalid>
+                <form [formGroup]="templateFields" (ngSubmit)="onSubmit()" class="example-form">
+                    <mat-form-field style="width:100px; ">
+                        <input style="background-color:transparent;" matInput formControlName="label"
+                            placeholder="Label" invalid>
                     </mat-form-field>
-                    <mat-select matInput formControlName="type" placeholder="Type" required style="width:100px;">
-                        <mat-option style="width:100px; font-size: 10px;" *ngFor="let type of validTypes"
-                            [value]=type.type>
-                            {{type.type}}
-                        </mat-option>
-                    </mat-select>
                     <mat-form-field style="width:100px;">
-                        <input style="" matInput formControlName="text" placeholder="Text" invalid>
+                        <mat-select matInput formControlName="type" placeholder="Type" required
+                            style=" color: #ffffff;">
+                            <mat-option style="width:100px; font-size: 10px; " *ngFor="let type of validTypes"
+                                [value]=type.type>
+                                {{type.type}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field style="width:100px;">
+                        <input style="background-color:transparent;" matInput formControlName="text" placeholder="Text"
+                            invalid>
                     </mat-form-field>
                     <button mat-button style="color: #349388;">
                         <mat-icon>check_circle_outline</mat-icon>

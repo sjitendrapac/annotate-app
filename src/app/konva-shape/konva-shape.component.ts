@@ -49,9 +49,10 @@ export class KonvaShapeComponent implements OnInit {
 
   ngOnInit() {
     this.parentEl = this.el.nativeElement;
+    this.imageSrc = localStorage.getItem('file');
     this.setupKonva();
     // console.log(localStorage.getItem('file'));
-    this.imageSrc = localStorage.getItem('file');
+    
     if(this.imageSrc.indexOf("application/pdf") != -1){
     this.createPdfToImage();
     }else{
@@ -78,10 +79,11 @@ export class KonvaShapeComponent implements OnInit {
         // var canvas = document.getElementById('the-canvas');
         var context = canvas.getContext('2d');
         
-        canvas.height = this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
-        canvas.width = this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
-
-        //
+        canvas.height = page.view[3];//this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
+        canvas.width = page.view[2];//this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
+        // this.stage.width = page.view[2];
+        // this.stage.height = page.view[3];
+        this.stage.setSize({ width: page.view[2], height: page.view[3]});
         // Render PDF page into canvas context
         //
         var task = page.render({canvasContext: context, viewport: viewport})
@@ -102,7 +104,7 @@ export class KonvaShapeComponent implements OnInit {
     console.log(this.pdfData);
   }
 
-  setupKonva() {
+  setupKonva() {    
     const width = this.parentEl.children[0].children[1].clientWidth;    //this.parentEl.children[0].clientWidth;
     const height = this.parentEl.children[0].children[1].clientHeight;  ;//this.parentEl.children[0].clientHeight;
     console.log(this.parentEl);
@@ -280,6 +282,7 @@ export class KonvaShapeComponent implements OnInit {
     const imageObj = new Image();
     imageObj.src = src;
     imageObj.onload = (() => {
+      
       console.log(imageObj.naturalHeight);
       console.log(imageObj.naturalWidth);
 
@@ -287,6 +290,7 @@ export class KonvaShapeComponent implements OnInit {
 
       const w = imageObj.naturalWidth;
       const h = imageObj.naturalHeight;
+      this.stage.setSize({ width: w, height: h});
       const padding = 10;
       const targetW = this.stage.width();// - (2 * padding);
       const targetH = this.stage.height();// - (2 * padding);
@@ -344,7 +348,10 @@ export class KonvaShapeComponent implements OnInit {
     const scaleX = image.naturalWidth / this.stage.width();
     const scaleY = image.naturalHeight / this.stage.height();
     const ctx = canvas.getContext('2d');
-    
+    // crop.x/totalwidth
+    //y/toalheight
+    // width: width/totalwidth
+    // height/totalheight//
     ctx.drawImage(
       image,
       crop.x * scaleX,

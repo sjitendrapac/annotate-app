@@ -6,7 +6,7 @@
         <button mat-button style="color: #349388" (click)="loadNextPage(false)" *ngIf="pageId > 0">
             <mat-icon>arrow_left</mat-icon>
         </button>
-        <button mat-button style="color: #349388" (click)="loadNextPage(true)" *ngIf="pageId < 7">
+        <button mat-button style="color: #349388" (click)="loadNextPage(true)" *ngIf="pageId < pdfData.length-1">
             <mat-icon>arrow_right</mat-icon>
         </button>
     </div>

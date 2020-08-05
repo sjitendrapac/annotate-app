@@ -72,7 +72,8 @@ export class AnnotateComponent implements OnInit {
     };
     this.aService.getTemplateFieldData(fieldData).subscribe(res => {
       console.log(res);
-    });
+
+    }, error => console.log(error));
     // API Call to confirm field data.
   }
 }

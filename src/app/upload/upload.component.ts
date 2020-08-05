@@ -20,18 +20,35 @@ export class UploadComponent implements OnInit {
     private aService: AnnotationdataService,
     public matDialog: MatDialog,
   ) { }
-  displayedColumns = ['name', 'id', 'operations'];
+  displayedColumns = ['name', 'is_image', 'operations'];
   dataSource = new MatTableDataSource<any>();
 
-  templateArray = [
-    { name: 'BOL 1', id: '1234', operations: '' },
-    { name: 'BOL 2', id: '5678', operations: '' },
-    { name: 'BOL 3', id: '9012', operations: '' },
-  ];
+  templateArray = [];
+
+  templateObject = {
+    "name": "",
+    "file_path": null,
+    "is_image": false,
+    "is_active": false,
+    "document_type": null,
+    "created_by": null,
+    "updated_by": null
+  };
+
+  documentObject = {
+    "file_name": "",
+    "file_path": null,
+    "status": null,
+    "is_active": false,
+    "batch": null,
+    "template": null
+  };
 
   ngOnInit(): void {
-    this.dataSource.data = this.templateArray;
-    // this.dataSource.sort = this.sort;
+    this.aService.getTemplates().subscribe((res) => {
+      console.log(res);
+      this.dataSource.data = res;
+    });
   }
 
   onSelectFile(e: { target: { files: string | any[]; }; }): void {

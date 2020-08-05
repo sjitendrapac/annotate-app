@@ -32,8 +32,9 @@ export class KonvaShapeComponent implements OnInit {
     y: Number,
   };
 
-  responseText = "Response Text";
-  label = "Consignee";
+  responseText = '';
+  label = '';
+  boxCoordinates;
 
   shapes: any = [];
   stage: Konva.Stage;
@@ -43,6 +44,8 @@ export class KonvaShapeComponent implements OnInit {
   rectSelected = false;
   transformers: Konva.Transformer[] = [];
   subscription: Subscription;
+  popoverNow = false;
+  allowPaiting = false;
 
   constructor(
     private RectService: RectangleService,
@@ -50,20 +53,16 @@ export class KonvaShapeComponent implements OnInit {
     public matDialog: MatDialog,
     private aService: AnnotationdataService,
     private config: NgbPopoverConfig
-  ) {
-    console.log('contructor');
-
-
-
-  }
+  ) { }
 
   ngOnInit() {
     this.parentEl = this.el.nativeElement;
     this.imageSrc = localStorage.getItem('file');
     this.setupKonva();
+    // this.allowPaiting = this.aService.isPaintingEnabled();
     // console.log(localStorage.getItem('file'));
-    
-    if (this.imageSrc.indexOf("application/pdf") != -1) {
+
+    if (this.imageSrc.indexOf('application/pdf') != -1) {
       this.createPdfToImage();
     } else {
       this.loadImage(this.imageSrc);
@@ -72,18 +71,28 @@ export class KonvaShapeComponent implements OnInit {
     this.config.autoClose = 'outside';
   }
 
+  ngDoCheck() {
+    this.allowPaiting = this.aService.isPaintingEnabled();
+  }
+
   closePopover(): void {
     // this.maskEditorAppliedMessage = null;
-    if (this.popover.isOpen()) { this.popover.close() };
+
+    // console.log('close' + this.popover.isOpen());
+    // if (this.popover.isOpen()) {
+    //   console.log('close kro popover');
+    //   this.popover.close();
+    // }
+    this.aService.postTemplateField(this.boxCoordinates, this.responseText);
   }
 
   openPopover(): void {
     console.log('open' + this.popover.isOpen());
     // this.maskEditorAppliedMessage = "Successfully Applied";
-    if (!this.popover.isOpen()) { this.popover.open() };
+    if (!this.popover.isOpen()) { this.popover.open(); }
   }
 
-  createPdfToImage(){
+  createPdfToImage() {
     // PDFJS.disableWorker = true;
     PDFJS.GlobalWorkerOptions.workerSrc = PDFSWorker;
 
@@ -91,48 +100,48 @@ export class KonvaShapeComponent implements OnInit {
       //
       // Fetch the first page
       //
-      for(var i = 1; i <= pdf.numPages; i++) {
-       await pdf.getPage(i).then(async page => {
-        var scale = 1;
-        var viewport = page.getViewport({ scale:scale });
+      for (var i = 1; i <= pdf.numPages; i++) {
+        await pdf.getPage(i).then(async page => {
+          var scale = 1;
+          var viewport = page.getViewport({ scale: scale });
 
-        //
-        // Prepare canvas using PDF page dimensions
-        const canvas = document.createElement('canvas');
-        // var canvas = document.getElementById('the-canvas');
-        var context = canvas.getContext('2d');
-        
-        canvas.height = page.view[3];//this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
-        canvas.width = page.view[2];//this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
-        // this.stage.width = page.view[2];
-        // this.stage.height = page.view[3];
-        this.stage.setSize({ width: page.view[2], height: page.view[3]});
-        // Render PDF page into canvas context
-        //
-        var task = page.render({canvasContext: context, viewport: viewport})
-        var data;
-        await task.promise.then(async () => {
-          data  = await canvas.toDataURL('image/jpeg');
-          this.pdfData.push(data);
-          if (i == 1) {
-          this.loadImage(data);
-          // console.log("new data: "+ data);
-          }
+          //
+          // Prepare canvas using PDF page dimensions
+          const canvas = document.createElement('canvas');
+          // var canvas = document.getElementById('the-canvas');
+          var context = canvas.getContext('2d');
+
+          canvas.height = page.view[3];//this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
+          canvas.width = page.view[2];//this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
+          // this.stage.width = page.view[2];
+          // this.stage.height = page.view[3];
+          this.stage.setSize({ width: page.view[2], height: page.view[3] });
+          // Render PDF page into canvas context
+          //
+          var task = page.render({ canvasContext: context, viewport: viewport })
+          var data;
+          await task.promise.then(async () => {
+            data = await canvas.toDataURL('image/jpeg');
+            this.pdfData.push(data);
+            if (i == 1) {
+              this.loadImage(data);
+              // console.log("new data: "+ data);
+            }
+          });
         });
-      });
-    }
-    }, function(error){
+      }
+    }, function (error) {
       console.log(error);
     });
-    console.log(this.pdfData);
+    // console.log(this.pdfData);
   }
 
-  setupKonva() {    
+  setupKonva() {
     const width = this.parentEl.children[0].children[1].clientWidth;    //this.parentEl.children[0].clientWidth;
     const height = this.parentEl.children[0].children[1].clientHeight;  //this.parentEl.children[0].clientHeight;
-    console.log(this.parentEl);
-    console.log(this.parentEl.parentElement.offsetHeight);
-    console.log(this.parentEl.parentElement.offsetLeft);
+    // console.log(this.parentEl);
+    // console.log(this.parentEl.parentElement.offsetHeight);
+    // console.log(this.parentEl.parentElement.offsetLeft);
     this.stage = new Konva.Stage({
       container: 'konvaContainer',
       width,
@@ -161,11 +170,14 @@ export class KonvaShapeComponent implements OnInit {
       if (component.rectSelected) {
         return;
       }
+      if (!this.allowPaiting) {
+        return;
+      }
       isPaint = true;
       const pos = component.stage.getPointerPosition();
       component.startPos = pos;
       rect = component.RectService.rectangle(pos, w, h);
-      console.log("mousedown touchstart: pos" + pos.x + " pos.y" + pos.y + " w: " + w + " h:" + h);
+      console.log('mousedown touchstart: pos' + pos.x + ' pos.y' + pos.y + ' w: ' + w + ' h:' + h);
       component.shapes.push(rect);
       component.layer.add(rect);
       component.addTransformerListeners();
@@ -173,6 +185,9 @@ export class KonvaShapeComponent implements OnInit {
     });
 
     this.stage.on('mouseup touchend', () => {
+      if (!this.allowPaiting) {
+        return;
+      }
       const pos = component.stage.getPointerPosition();
       component.layer.batchDraw();
       w = pos.x - component.startPos.x;
@@ -193,6 +208,8 @@ export class KonvaShapeComponent implements OnInit {
       };
       h = 0;
       w = 0;
+
+      // Logic to delete 0 height and width rectangles
       const rNodes = component.layer.find('Rect');
       const r = rNodes
         .toArray()
@@ -201,13 +218,8 @@ export class KonvaShapeComponent implements OnInit {
         r.destroy();
       }
       const lastNode = rNodes[rNodes.length - 1];
-      // const crop = {
-      //   x: component.startPos.x,
-      //   y: component.startPos.y,
-      //   width: w,
-      //   height: h,
-      // }
-      console.log("mousedown touchend: " + lastNode.attrs.x + "  lastNode.attrs.y" + lastNode.attrs.y + " lastNode.attrs.width: " + lastNode.attrs.width + " lastNode.attrs.height: " + lastNode.attrs.height);
+      console.log('mousedown touchend: ' + lastNode.attrs.x + '  lastNode.attrs.y' + lastNode.attrs.y +
+        ' lastNode.attrs.width: ' + lastNode.attrs.width + ' lastNode.attrs.height: ' + lastNode.attrs.height);
       const crop = {
         x: lastNode.attrs.x,
         y: lastNode.attrs.y,
@@ -225,8 +237,26 @@ export class KonvaShapeComponent implements OnInit {
       // console.log(i);
 
       component.layer.draw();
-      component.makeClientCrop(crop);
+      // component.makeClientCrop(crop);
+      // console.log(crop);
+      const imageNodes = this.layer.find('Image');
+      const image = imageNodes[imageNodes.length - 1];
+      const imWidth = image.attrs.image.naturalWidth;
+      const imHeight = image.attrs.image.naturalHeight;
+      const coordinates = {
+        x: crop.x / imWidth,
+        y: crop.y / imHeight,
+        w: crop.width / imWidth,
+        h: crop.height / imHeight
+      };
+      console.log(coordinates);
+      this.aService.extractText(coordinates).subscribe((res) => {
+        console.log(res);
+        this.responseText = res.text;
+        this.boxCoordinates = coordinates;
+      });
       component.config.container = 'konvaDivId';
+      // this.popoverNow = true;
       component.openPopover();
       // component.openModal(crop);
 
@@ -234,6 +264,9 @@ export class KonvaShapeComponent implements OnInit {
     // and core function - drawing
     this.stage.on('mousemove touchmove', () => {
       if (!isPaint) {
+        return;
+      }
+      if (!this.allowPaiting) {
         return;
       }
       const pos = component.stage.getPointerPosition();
@@ -304,20 +337,20 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   loadImage(src) {
-    console.log('inside loadimage');
+    // console.log('inside loadimage');
 
     const imageObj = new Image();
     imageObj.src = src;
     imageObj.onload = (() => {
-      
-      console.log(imageObj.naturalHeight);
-      console.log(imageObj.naturalWidth);
+
+      // console.log(imageObj.naturalHeight);
+      // console.log(imageObj.naturalWidth);
 
       // if (imageObj.naturalHeight && imageObj.naturalWidth) {
 
       const w = imageObj.naturalWidth;
       const h = imageObj.naturalHeight;
-      this.stage.setSize({ width: w, height: h});
+      this.stage.setSize({ width: w, height: h });
       const padding = 10;
       const targetW = this.stage.width();// - (2 * padding);
       const targetH = this.stage.height();// - (2 * padding);

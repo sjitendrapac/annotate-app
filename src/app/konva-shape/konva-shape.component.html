@@ -1,17 +1,6 @@
-<!-- <div id="konvaContainer"></div> -->
-
-<ng-template #popContent>
-    <h3>{{responseText}}</h3>
-    <div>{{label}}</div>
-    <button mat-icon-button>
-        <mat-icon>check_circle_outline</mat-icon>
-    </button>
-</ng-template>
-
 <mat-card class="justify-content-center">
     <mat-card-subtitle> invoice </mat-card-subtitle>
     <!-- <nb-container> -->
-    <button mat-button [ngbPopover]="popContent">Popover</button>
     <!-- </nb-container> -->
     <div *ngIf="pdfData.length">
         <button mat-button style="color: #349388" (click)="loadNextPage(false)" *ngIf="pageId > 0">
@@ -21,5 +10,21 @@
             <mat-icon>arrow_right</mat-icon>
         </button>
     </div>
-    <mat-card-content #konvaDivId id="konvaContainer" style="min-height:700px;min-width:700px"></mat-card-content>
+    <ng-container #popOver="ngbPopover" [ngbPopover]="popContent">
+        <mat-card-content #konvaDivId id="konvaContainer" style="min-height:700px;min-width:700px"></mat-card-content>
+    </ng-container>
 </mat-card>
+
+<!-- <div mat-button #popOver="ngbPopover" [ngbPopover]="popContent"></div> -->
+
+
+<ng-template #popContent>
+    <mat-card>
+        <mat-card-title>{{label}}</mat-card-title>
+        <mat-card-content>{{responseText}}
+            <button mat-icon-button>
+                <mat-icon>check_circle_outline</mat-icon>
+            </button>
+        </mat-card-content>
+    </mat-card>
+</ng-template>

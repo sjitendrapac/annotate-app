@@ -65,6 +65,14 @@ export class AnnotateComponent implements OnInit {
 
   onSubmit() {
     console.log(this.templateFields.controls);
+    const fieldData = {
+      label: this.templateFields.controls.label.value,
+      type: this.templateFields.controls.type.value,
+      text: this.templateFields.controls.text.value,
+    };
+    this.aService.getTemplateFieldData(fieldData).subscribe(res => {
+      console.log(res);
+    });
     // API Call to confirm field data.
   }
 }

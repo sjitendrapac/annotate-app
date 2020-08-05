@@ -8,11 +8,13 @@ import { Subscription } from 'rxjs';
 // import tippy from 'tippy.js';
 import PDFJS from 'pdfjs-dist/build/pdf';
 import PDFSWorker from 'pdfjs-dist/build/pdf.worker.entry';
+import { NgbPopoverConfig, NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-konva-shape',
   templateUrl: './konva-shape.component.html',
   styleUrls: ['./konva-shape.component.css'],
+  providers: [NgbPopoverConfig]
 })
 export class KonvaShapeComponent implements OnInit {
   @ViewChild('konvaContainer') k: any;
@@ -20,6 +22,7 @@ export class KonvaShapeComponent implements OnInit {
   // @Input() imageSrc: Blob;
 
   @ViewChild('konvaDivId') konvaContainId: any;
+  @ViewChild('popOver') popover: NgbPopover;
   imageSrc: string;
   parentEl: Element;
   pdfData: String[] = [];
@@ -45,9 +48,13 @@ export class KonvaShapeComponent implements OnInit {
     private RectService: RectangleService,
     private el: ElementRef,
     public matDialog: MatDialog,
-    private aService: AnnotationdataService
+    private aService: AnnotationdataService,
+    private config: NgbPopoverConfig
   ) {
     console.log('contructor');
+
+
+
   }
 
   ngOnInit() {
@@ -60,6 +67,19 @@ export class KonvaShapeComponent implements OnInit {
     } else {
       this.loadImage(this.imageSrc);
     }
+    this.config.triggers = 'manual';
+    this.config.autoClose = 'outside';
+  }
+
+  closePopover(): void {
+    // this.maskEditorAppliedMessage = null;
+    if (this.popover.isOpen()) { this.popover.close() };
+  }
+
+  openPopover(): void {
+    console.log('open' + this.popover.isOpen());
+    // this.maskEditorAppliedMessage = "Successfully Applied";
+    if (!this.popover.isOpen()) { this.popover.open() };
   }
 
   createPdfToImage() {
@@ -147,6 +167,7 @@ export class KonvaShapeComponent implements OnInit {
       component.shapes.push(rect);
       component.layer.add(rect);
       component.addTransformerListeners();
+      // this.closePopover();
     });
 
     this.stage.on('mouseup touchend', () => {
@@ -191,6 +212,7 @@ export class KonvaShapeComponent implements OnInit {
         width: lastNode.attrs.width,
         height: lastNode.attrs.height,
       };
+      console.log(lastNode);
       // const croppedRect = lastNode.toCanvas({
       //   callback(img) {
       //     console.log(img);
@@ -202,7 +224,9 @@ export class KonvaShapeComponent implements OnInit {
 
       component.layer.draw();
       component.makeClientCrop(crop);
-      component.openModal(crop);
+      component.config.container = 'konvaDivId';
+      component.openPopover();
+      // component.openModal(crop);
 
     });
     // and core function - drawing

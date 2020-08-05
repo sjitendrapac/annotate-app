@@ -17,12 +17,11 @@
 
 <!-- <div mat-button #popOver="ngbPopover" [ngbPopover]="popContent"></div> -->
 
-
 <ng-template #popContent>
     <mat-card>
         <mat-card-title>{{label}}</mat-card-title>
         <mat-card-content>{{responseText}}
-            <button mat-icon-button>
+            <button mat-icon-button (click)="closePopover()">
                 <mat-icon>check_circle_outline</mat-icon>
             </button>
         </mat-card-content>

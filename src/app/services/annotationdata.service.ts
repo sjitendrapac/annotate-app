@@ -16,6 +16,7 @@ export class AnnotationdataService {
   // Observable string streams
   missionAnnounced$ = this.missionAnnouncedSource.asObservable();
   data = [];
+  allowPainting = false;
 
   templateField =
     {
@@ -48,45 +49,59 @@ export class AnnotationdataService {
     this.missionAnnouncedSource.next(mission);
   }
 
+  isPaintingEnabled() {
+    if (this.allowPainting) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   addField() {
+    console.log("add feild");
     this.data.push({ label: '', type: '', text: '' });
+    this.allowPainting = true;
   }
 
   getData() {
     return this.data;
   }
 
-  postTemplateField(coordinates) {
+  postTemplateField(coordinates, text) {
     console.log(coordinates);
-    this.templateField.bounding_box_x_value = coordinates.x;
-    this.templateField.bounding_box_y_value = coordinates.y;
-    this.templateField.bounding_box_w_value = coordinates.w;
-    this.templateField.bounding_box_h_value = coordinates.h;
-    this.templateField.bounding_box_x_label = coordinates.x;
-    this.templateField.bounding_box_y_label = coordinates.y;
-    this.templateField.bounding_box_w_label = coordinates.w;
-    this.templateField.bounding_box_h_label = coordinates.h;
-
+    console.log(text);
+    this.templateField.bounding_box_x_value = coordinates.x.toFixed(3);
+    this.templateField.bounding_box_y_value = coordinates.y.toFixed(3);
+    this.templateField.bounding_box_w_value = coordinates.w.toFixed(3);
+    this.templateField.bounding_box_h_value = coordinates.h.toFixed(3);
+    this.templateField.bounding_box_x_label = coordinates.x.toFixed(3);
+    this.templateField.bounding_box_y_label = coordinates.y.toFixed(3);
+    this.templateField.bounding_box_w_label = coordinates.w.toFixed(3);
+    this.templateField.bounding_box_h_label = coordinates.h.toFixed(3);
+    // this.getTemplateFieldData()
   }
 
   getTemplateFieldData(data) {
-    this.templateField.abbreviation = data.label;;
+    this.templateField.abbreviation = data.label;
     this.templateField.name = data.label;
     this.templateField.label_name = data.label;
     this.templateField.label_name = data.label;
-    this.templateField.data_type = data.type;
-    this.templateField.created_by = 'admin';
-    this.templateField.updated_by = 'admin';
+    this.templateField.data_type = 2;
+    this.templateField.created_by = 1;
+    this.templateField.updated_by = 1;
     this.templateField.page_number = 1;
     this.templateField.level = 1;
     this.templateField.sequence_num = 1;
-    this.templateField.template = 1234;
-    const stringObj = JSON.stringify(this.templateField);
+    this.templateField.template = 1;
+
+    this.allowPainting = false;
+
+    // const stringObj = JSON.stringify(this.templateField);
     console.log(this.templateField);
 
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
-    const POST_URL: string = environment.API_BASE_URL + '/ocr/template-fields/';
-    return this.http.post<any>(POST_URL, stringObj, { headers: params });
+    const POST_URL: string = environment.API_BASE_URL + 'template-fields/';
+    return this.http.post<any>(POST_URL, this.templateField, { headers: params });
   }
 
   postImage(croppedImage: string): Observable<any> {
@@ -111,7 +126,7 @@ export class AnnotationdataService {
     const stringObj = JSON.stringify(obj);
 
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
-    const POST_URL: string = environment.API_BASE_URL + '/templates/';
+    const POST_URL: string = environment.API_BASE_URL + 'templates/';
     return this.http.post<any>(POST_URL, stringObj, { headers: params });
   }
 
@@ -119,7 +134,18 @@ export class AnnotationdataService {
     const stringObj = JSON.stringify(obj);
 
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
-    const POST_URL: string = environment.API_BASE_URL + '/documents/';
+    const POST_URL: string = environment.API_BASE_URL + 'documents/';
     return this.http.post<any>(POST_URL, stringObj, { headers: params });
+  }
+
+  extractText(obj): Observable<any> {
+    // const stringObj = JSON.stringify(obj);
+    const object = {
+      coordinates: obj
+    };
+
+    const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
+    const POST_URL: string = environment.API_BASE_URL + 'templates/1/extract_text/';
+    return this.http.post<any>(POST_URL, object, { headers: params });
   }
 }

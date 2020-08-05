@@ -84,20 +84,11 @@ export class AnnotationdataService {
     const stringObj = JSON.stringify(this.templateField);
     console.log(this.templateField);
 
-    const params = new HttpHeaders({ accept: 'application/json' });
+    const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
     const POST_URL: string = environment.API_BASE_URL + '/ocr/template-fields/';
     return this.http.post<any>(POST_URL, stringObj, { headers: params });
   }
 
-
-  // postImage(croppedImage): void {
-  //   console.log(croppedImage);
-  //   const base64result = croppedImage.split(',')[1];
-  //   const obj = {
-  //     data: base64result,
-  //   };
-  //   console.log(JSON.stringify(obj));
-  // }
   postImage(croppedImage: string): Observable<any> {
     const base64result = croppedImage.split(',')[1];
     const obj = {
@@ -107,15 +98,28 @@ export class AnnotationdataService {
 
     const params = new HttpHeaders({ accept: 'application/json' });
     const POST_URL: string = environment.API_BASE_URL + '/get_text';
-    // const API_BASE_URL = "https://eae70f175346.ngrok.io"
-    // const POST_URL = API_BASE_URL + '/get_text';
     return this.http.post<any>(POST_URL, stringObj, { headers: params });
   }
 
+  getTemplates(): Observable<any> {
+    const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
+    const POST_URL: string = environment.API_BASE_URL + 'templates/';
+    return this.http.get(POST_URL, { headers: params });
+  }
 
+  addTemplate(obj): Observable<any> {
+    const stringObj = JSON.stringify(obj);
 
-  // confirmMission(astronaut: string) {
-  //   console.log("confirmMission: ", astronaut)
-  //   this.missionConfirmedSource.next(astronaut);
-  // }
+    const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
+    const POST_URL: string = environment.API_BASE_URL + '/templates/';
+    return this.http.post<any>(POST_URL, stringObj, { headers: params });
+  }
+
+  addDocument(obj): Observable<any> {
+    const stringObj = JSON.stringify(obj);
+
+    const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
+    const POST_URL: string = environment.API_BASE_URL + '/documents/';
+    return this.http.post<any>(POST_URL, stringObj, { headers: params });
+  }
 }

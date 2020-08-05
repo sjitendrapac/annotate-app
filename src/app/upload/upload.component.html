@@ -20,9 +20,9 @@
                         <td mat-cell color="primary" *matCellDef="let row">{{row.name}}</td>
                     </ng-container>
 
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell color="primary" *matHeaderCellDef mat-sort-header>Template Id</th>
-                        <td mat-cell color="primary" *matCellDef="let row">{{row.id}}</td>
+                    <ng-container matColumnDef="is_image">
+                        <th mat-header-cell color="primary" *matHeaderCellDef mat-sort-header>Image based PDF?</th>
+                        <td mat-cell color="primary" *matCellDef="let row">{{row.is_image}}</td>
                     </ng-container>
 
                     <ng-container matColumnDef="operations">

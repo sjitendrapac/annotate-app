@@ -7,3 +7,16 @@ mat-card-subtitle {
   background-color: #3c4345;
   color: #ffffff;
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(90, 90, 90);
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2122;
+}

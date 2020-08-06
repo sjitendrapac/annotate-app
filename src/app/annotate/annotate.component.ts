@@ -60,7 +60,6 @@ export class AnnotateComponent implements OnInit {
 
   ngDoCheck() {
     this.data = this.aService.getData();
-
     // this.responseText = this.aService.getText();
 
   }
@@ -92,32 +91,24 @@ export class AnnotateComponent implements OnInit {
   }
 
   patchForms(obj) {
-    console.log('patch form', obj);
-    // for(let)
-    const templates = [];
+    let type;
     obj.forEach(element => {
       // console.log(element);
-      templates.push({
-        label: element.name,
-        text: '',
-        type: element.data_type
+      this.validTypes.forEach(t => {
+        if (t.id === element.data_type) {
+          type = t.name;
+        }
       });
-      // this.addTemplate();
+      const template =
+        this.fb.group({
+          label: element.name,
+          text: '',
+          type: type,
+        });
+
+      this.templateArray().push(template);
     });
-    const formObj = { templateArray: [templates] };
-    // this.templateArray().push(templates);
-    console.log(formObj);
-    this.templateForm.setValue({ formObj });
   }
-  // this.templateArray().patchValue([
-  //   templates
-  // ]);
-  // this.templateFields.patchValue({
-  //   text: this.responseText
-  // });
-  // }
-  // tslint:disable-next-line: typedef
-  // get f() { return this.uploadForm.controls; }
 
   onTemplateSubmit(t) {
     // console.log('aaaaa', i);
@@ -137,6 +128,6 @@ export class AnnotateComponent implements OnInit {
   }
   onSubmit() {
     console.log('onSubmit called');
-    console.log(this.templateForm);
+    console.log(this.templateForm.controls);
   }
 }

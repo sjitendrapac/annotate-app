@@ -25,7 +25,7 @@ export class ReviewComponent implements OnInit {
 
   getTemplateFields() {
     this.aService.viewTemplate(this.templateId).subscribe((res) => {
-      console.log(res);
+      // console.log(res);
       this.templateFieldsArray = res;
       this.annotate.patchForms(this.templateFieldsArray);
     }, (err => console.log(err)

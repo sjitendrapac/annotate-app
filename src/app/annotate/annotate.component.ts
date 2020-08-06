@@ -1,3 +1,4 @@
+import { LayoutModule } from '@angular/cdk/layout';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm, FormGroup, FormBuilder, FormArray } from '@angular/forms';
 // import { MatPaginator } from '@angular/material/paginator';
@@ -56,9 +57,7 @@ export class AnnotateComponent implements OnInit {
     this.data = this.aService.getData();
 
     // this.responseText = this.aService.getText();
-    // this.templateFields.patchValue({
-    //   text: this.responseText
-    // });
+
   }
 
   // tslint:disable-next-line: use-lifecycle-interface
@@ -87,12 +86,30 @@ export class AnnotateComponent implements OnInit {
     this.templateArray().removeAt(i);
   }
 
+  patchForms(obj) {
+    console.log('patch form', obj);
+    // for(let)
+    const template = {
+      label: obj.label,
+      text: obj.text,
+      type: obj.data_type
+    };
+    const formObj = { templateArray: [template] };
+
+    console.log(formObj);
+    this.templateForm.patchValue([
+      formObj
+    ]);
+    // this.templateFields.patchValue({
+    //   text: this.responseText
+    // });
+  }
   // tslint:disable-next-line: typedef
   // get f() { return this.uploadForm.controls; }
 
   onTemplateSubmit(t) {
     // console.log('aaaaa', i);
-    // console.log('bbbbb', t.value);
+    console.log('bbbbb', t.value);
     // console.log(this.templateForm.value.templateArray[i]);
 
     const fieldData = {

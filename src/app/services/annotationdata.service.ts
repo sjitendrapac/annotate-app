@@ -137,6 +137,13 @@ export class AnnotationdataService {
     return this.http.post<any>(POST_URL, stringObj, { headers: params });
   }
 
+  viewTemplate(id): Observable<any> {
+    // const obj = { id };
+    const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
+    const POST_URL: string = environment.API_BASE_URL + 'template-fields/' + id + '/';
+    return this.http.get<any>(POST_URL, { headers: params });
+  }
+
   addDocument(obj): Observable<any> {
     const stringObj = JSON.stringify(obj);
 

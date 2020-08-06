@@ -59,10 +59,11 @@ export class AnnotationdataService {
     }
   }
 
-  addField() {
-    console.log("add feild");
-    this.data.push({ label: '', type: '', text: '' });
+  enableCanvas() {
     this.allowPainting = true;
+  }
+  disableCanvas() {
+    this.allowPainting = false;
   }
 
   getData() {

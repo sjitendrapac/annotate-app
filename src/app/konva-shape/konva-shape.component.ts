@@ -83,6 +83,7 @@ export class KonvaShapeComponent implements OnInit {
     //   console.log('close kro popover');
     //   this.popover.close();
     // }
+    console.log(this.boxCoordinates, this.responseText);
     this.aService.postCoordinates(this.boxCoordinates, this.responseText);
   }
 
@@ -254,6 +255,8 @@ export class KonvaShapeComponent implements OnInit {
         console.log(res);
         this.responseText = res.text;
         this.boxCoordinates = coordinates;
+      }, err => {
+        console.log(err);
       });
       component.config.container = 'konvaDivId';
       // this.popoverNow = true;

@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./review.component.css']
 })
 export class ReviewComponent implements OnInit {
-
+  disableUntilComplete = true;
   constructor(private router: Router, private aService: AnnotationdataService) { }
 
   ngOnInit(): void {
@@ -20,6 +20,7 @@ export class ReviewComponent implements OnInit {
 
   addLabel() {
     this.aService.addField();
+    this.disableUntilComplete = false;
   }
 
 }

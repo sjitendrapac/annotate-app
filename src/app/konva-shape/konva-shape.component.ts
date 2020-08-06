@@ -83,7 +83,7 @@ export class KonvaShapeComponent implements OnInit {
     //   console.log('close kro popover');
     //   this.popover.close();
     // }
-    this.aService.postTemplateField(this.boxCoordinates, this.responseText);
+    this.aService.postCoordinates(this.boxCoordinates, this.responseText);
   }
 
   openPopover(): void {

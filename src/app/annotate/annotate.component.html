@@ -3,6 +3,7 @@
         <mat-expansion-panel-header>
             <mat-panel-title style="justify-content: center;">Template Fields</mat-panel-title>
         </mat-expansion-panel-header>
+        <div style="max-height:465px; overflow-y: scroll">
         <mat-card>
             <div class="row w-100 justify-content-center">
                 <form *ngFor="let item of data; let i = index;" [formGroup]="templateFields" (ngSubmit)="onSubmit()"
@@ -30,5 +31,6 @@
                 </form>
             </div>
         </mat-card>
+    </div>
     </mat-expansion-panel>
 </mat-accordion>

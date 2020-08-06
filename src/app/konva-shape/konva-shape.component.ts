@@ -36,6 +36,9 @@ export class KonvaShapeComponent implements OnInit {
   label = '';
   boxCoordinates;
 
+  imageWidth;
+  imageHeight;
+
   shapes: any = [];
   stage: Konva.Stage;
   layer: Konva.Layer;
@@ -69,6 +72,10 @@ export class KonvaShapeComponent implements OnInit {
     }
     this.config.triggers = 'manual';
     this.config.autoClose = 'outside';
+    this.aService.konvaCalled$.subscribe((res) => {
+      console.log("subscribe worked");
+      this.addRectangleFromTemplate(res);
+    });
   }
 
   ngDoCheck() {
@@ -155,6 +162,21 @@ export class KonvaShapeComponent implements OnInit {
     this.addLineListeners();
   }
 
+  addRectangleFromTemplate(coord) {
+    // console.log(coord);
+    const pos = {
+      x: coord.pos.x * this.imageWidth,
+      y: coord.pos.y * this.imageHeight,
+    };
+    const w = coord.w * this.imageWidth;
+    const h = coord.h * this.imageHeight;
+    let rect: Konva.Rect;
+    // console.log('Predefined Rectangles: pos.x' + pos.x + ' pos.y' + pos.y + ' w: ' + w + ' h:' + h);
+    rect = this.RectService.rectangle(pos, w, h);
+    this.shapes.push(rect);
+    this.layer.add(rect);
+    this.addTransformerListeners();
+  }
 
 
   addLineListeners() {
@@ -353,6 +375,8 @@ export class KonvaShapeComponent implements OnInit {
 
       const w = imageObj.naturalWidth;
       const h = imageObj.naturalHeight;
+      this.imageWidth = imageObj.naturalWidth;
+      this.imageHeight = imageObj.naturalHeight;
       this.stage.setSize({ width: w, height: h });
       const padding = 10;
       const targetW = this.stage.width();// - (2 * padding);

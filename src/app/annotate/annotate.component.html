@@ -5,36 +5,37 @@
         </mat-expansion-panel-header>
         <div style="max-height:465px; overflow-y: scroll">
             <mat-card [formGroup]="templateForm">
-                <div formArrayName="templateArray" class="row w-100 justify-content-center">
-                    <form *ngFor="let template of templateArray().controls; let i=index" [formGroupName]="i"
-                        class="example-form">
-                        <mat-form-field style="width: 125px;">
-                            <input style="background-color:transparent;" matInput formControlName="label"
-                                placeholder="Label" invalid>
-                        </mat-form-field>
-                        <mat-form-field style="width: 125px;">
-                            <mat-select matInput formControlName="type" placeholder="Type" required
-                                style=" color: #ffffff;">
-                                <mat-option *ngFor="let type of validTypes" [value]=type.name>
-                                    {{type.name}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                        <mat-form-field style="width: 125px;">
-                            <input style="background-color:transparent;" matInput formControlName="text"
-                                placeholder="Text" invalid>
-                        </mat-form-field>
-                        <button mat-icon-button style="color: #349388;" (click)="onTemplateSubmit(template)">
-                            <mat-icon>check_circle_outline</mat-icon>
-                        </button>
-                        <button mat-icon-button style="color: #349388;" (click)="removeTemplate(i)">
-                            <mat-icon>delete</mat-icon>
-                        </button>
-                    </form>
-                </div>
-                <div class="row w-100  justify-content-center" *ngIf="templateArray().length">
-                    <button mat-raised-button (click)="onSubmit()" style="background-color: #349388;">Submit</button>
-                </div>
+                <mat-card-content style="justify-content: space-evenly;">
+
+                    <div formArrayName="templateArray" class="row w-100 justify-content-center">
+                        <form *ngFor="let template of templateArray().controls; let i=index" [formGroupName]="i"
+                            class="example-form">
+                            <mat-form-field appearance="fill" class="form-field">
+                                <input class="input-class" matInput formControlName="label" placeholder="Label">
+                            </mat-form-field>
+                            <mat-form-field appearance="fill" class="form-field">
+                                <mat-select class="input-class" matInput formControlName="type" placeholder="Type">
+                                    <mat-option *ngFor="let type of validTypes" [value]=type.name>
+                                        {{type.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field class="form-field" appearance="fill">
+                                <input class="input-class" matInput formControlName="text" placeholder="Text">
+                            </mat-form-field>
+                            <button mat-icon-button style="color: #349388;" (click)="onTemplateSubmit(template)">
+                                <mat-icon>check_circle_outline</mat-icon>
+                            </button>
+                            <button mat-icon-button style="color: #349388;" (click)="removeTemplate(i)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="row w-100  justify-content-center" *ngIf="templateArray().length">
+                        <button mat-raised-button (click)="onSubmit()"
+                            style="background-color: #349388;">Submit</button>
+                    </div>
+                </mat-card-content>
             </mat-card>
         </div>
     </mat-expansion-panel>

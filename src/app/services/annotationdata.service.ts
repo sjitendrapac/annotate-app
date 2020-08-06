@@ -45,10 +45,23 @@ export class AnnotationdataService {
 
   responseText: string;
 
+  // private componentMethodCallSource = new Subject<any>();
+  private callKonvaSubject = new Subject<any>();
+
+
+  // Observable string streams
+  // componentMethodCalled$ = this.componentMethodCallSource.asObservable();
+  konvaCalled$ = this.callKonvaSubject.asObservable();
+
+
   constructor(private http: HttpClient) { }
   // Service message commands
   announceMission(mission: string) {
     this.missionAnnouncedSource.next(mission);
+  }
+  // Service message commands
+  callKonvaComponent(coordinates) {
+    this.callKonvaSubject.next(coordinates);
   }
 
   isPaintingEnabled() {

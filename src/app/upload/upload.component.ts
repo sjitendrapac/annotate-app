@@ -46,7 +46,6 @@ export class UploadComponent implements OnInit {
 
   ngOnInit(): void {
     this.aService.getTemplates().subscribe((res) => {
-      // console.log(res);
       this.dataSource.data = res;
     });
   }
@@ -68,8 +67,7 @@ export class UploadComponent implements OnInit {
     }
   }
 
-  onRowClicked(e) {
-    console.log(e.id);
+  viewTemplate(e) {
     this.router.navigate(['review'], { queryParams: { templateId: e.id } });
   }
 

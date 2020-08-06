@@ -52,10 +52,7 @@ export class AnnotateComponent implements OnInit {
   ngOnInit() {
     // this.addTemplate();
     this.aService.enableCanvas();
-    this.aService.getDataTypes().subscribe((res) => {
-      // console.log(res);
-      this.validTypes = res;
-    });
+
   }
 
   ngDoCheck() {
@@ -91,22 +88,33 @@ export class AnnotateComponent implements OnInit {
   }
 
   patchForms(obj) {
-    let type;
-    obj.forEach(element => {
-      // console.log(element);
-      this.validTypes.forEach(t => {
-        if (t.id === element.data_type) {
-          type = t.name;
-        }
-      });
-      const template =
-        this.fb.group({
-          label: element.name,
-          text: '',
-          type: type,
+    this.aService.getDataTypes().subscribe((res) => {
+      this.validTypes = res;
+      let type;
+      obj.forEach(element => {
+        this.validTypes.forEach(t => {
+          if (t.id === element.data_type) {
+            type = t.name;
+          }
         });
+        const template =
+          this.fb.group({
+            label: element.name,
+            text: '',
+            type: type,
+          });
 
-      this.templateArray().push(template);
+        this.templateArray().push(template);
+        const coordinates = {
+          pos: {
+            x: element.bounding_box_x_value,
+            y: element.bounding_box_y_value,
+          },
+          w: element.bounding_box_w_value,
+          h: element.bounding_box_h_value
+        };
+        this.aService.callKonvaComponent(coordinates);
+      });
     });
   }
 

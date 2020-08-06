@@ -43,6 +43,8 @@ export class AnnotationdataService {
       updated_by: null
     };
 
+  responseText: string;
+
   constructor(private http: HttpClient) { }
   // Service message commands
   announceMission(mission: string) {
@@ -66,22 +68,26 @@ export class AnnotationdataService {
   getData() {
     return this.data;
   }
+  getText() {
+    return this.responseText;
+  }
 
-  postTemplateField(coordinates, text) {
+  postCoordinates(coordinates, text) {
     console.log(coordinates);
     console.log(text);
-    this.templateField.bounding_box_x_value = coordinates.x.toFixed(3);
-    this.templateField.bounding_box_y_value = coordinates.y.toFixed(3);
-    this.templateField.bounding_box_w_value = coordinates.w.toFixed(3);
-    this.templateField.bounding_box_h_value = coordinates.h.toFixed(3);
-    this.templateField.bounding_box_x_label = coordinates.x.toFixed(3);
-    this.templateField.bounding_box_y_label = coordinates.y.toFixed(3);
-    this.templateField.bounding_box_w_label = coordinates.w.toFixed(3);
-    this.templateField.bounding_box_h_label = coordinates.h.toFixed(3);
+    this.responseText = text;
+    this.templateField.bounding_box_x_value = coordinates.x.toFixed(5);
+    this.templateField.bounding_box_y_value = coordinates.y.toFixed(5);
+    this.templateField.bounding_box_w_value = coordinates.w.toFixed(5);
+    this.templateField.bounding_box_h_value = coordinates.h.toFixed(5);
+    this.templateField.bounding_box_x_label = coordinates.x.toFixed(5);
+    this.templateField.bounding_box_y_label = coordinates.y.toFixed(5);
+    this.templateField.bounding_box_w_label = coordinates.w.toFixed(5);
+    this.templateField.bounding_box_h_label = coordinates.h.toFixed(5);
     // this.getTemplateFieldData()
   }
 
-  getTemplateFieldData(data) {
+  postTemplateFieldData(data) {
     this.templateField.abbreviation = data.label;
     this.templateField.name = data.label;
     this.templateField.label_name = data.label;

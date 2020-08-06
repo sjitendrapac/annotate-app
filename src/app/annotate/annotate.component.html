@@ -3,9 +3,10 @@
         <mat-expansion-panel-header>
             <mat-panel-title style="justify-content: center;">Template Fields</mat-panel-title>
         </mat-expansion-panel-header>
-        <mat-card *ngFor="let item of data">
+        <mat-card>
             <div class="row w-100 justify-content-center">
-                <form [formGroup]="templateFields" (ngSubmit)="onSubmit()" class="example-form">
+                <form *ngFor="let item of data; let i = index;" [formGroup]="templateFields" (ngSubmit)="onSubmit()"
+                    class="example-form">
                     <mat-form-field style="width:100px; ">
                         <input style="background-color:transparent;" matInput formControlName="label"
                             placeholder="Label" invalid>

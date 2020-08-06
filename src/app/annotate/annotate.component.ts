@@ -25,8 +25,8 @@ export class AnnotateComponent implements OnInit {
 
   subscription: Subscription;
   mission = '<no mission announced>';
-
   data = [];
+  responseText: string;
 
   validTypes = [
     { type: 'Numeric' },
@@ -52,6 +52,10 @@ export class AnnotateComponent implements OnInit {
 
   ngDoCheck() {
     this.data = this.aService.getData();
+    this.responseText = this.aService.getText();
+    this.templateFields.patchValue({
+      text: this.responseText
+    });
   }
 
   // tslint:disable-next-line: use-lifecycle-interface
@@ -64,13 +68,13 @@ export class AnnotateComponent implements OnInit {
   // get f() { return this.uploadForm.controls; }
 
   onSubmit() {
-    console.log(this.templateFields.controls);
+    // console.log(this.templateFields.controls);
     const fieldData = {
       label: this.templateFields.controls.label.value,
       type: this.templateFields.controls.type.value,
       text: this.templateFields.controls.text.value,
     };
-    this.aService.getTemplateFieldData(fieldData).subscribe(res => {
+    this.aService.postTemplateFieldData(fieldData).subscribe(res => {
       console.log(res);
 
     }, error => console.log(error));

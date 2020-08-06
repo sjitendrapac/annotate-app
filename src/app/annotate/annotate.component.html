@@ -15,8 +15,8 @@
                         <mat-form-field style="width: 125px;">
                             <mat-select matInput formControlName="type" placeholder="Type" required
                                 style=" color: #ffffff;">
-                                <mat-option *ngFor="let type of validTypes" [value]=type.type>
-                                    {{type.type}}
+                                <mat-option *ngFor="let type of validTypes" [value]=type.name>
+                                    {{type.name}}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>

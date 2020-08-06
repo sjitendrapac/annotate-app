@@ -31,10 +31,11 @@ export class AnnotateComponent implements OnInit {
   data = [];
   responseText: string;
 
-  validTypes = [
-    { type: 'Numeric' },
-    { type: 'Alphanumeric' }
-  ];
+  validTypes;
+  // validTypes = [
+  //   { type: 'Numeric' },
+  //   { type: 'Alphanumeric' }
+  // ];
 
   constructor(private fb: FormBuilder, private aService: AnnotationdataService) {
     this.templateForm = this.fb.group({
@@ -49,8 +50,12 @@ export class AnnotateComponent implements OnInit {
 
 
   ngOnInit() {
-    this.addTemplate();
+    // this.addTemplate();
     this.aService.enableCanvas();
+    this.aService.getDataTypes().subscribe((res) => {
+      // console.log(res);
+      this.validTypes = res;
+    });
   }
 
   ngDoCheck() {
@@ -89,21 +94,28 @@ export class AnnotateComponent implements OnInit {
   patchForms(obj) {
     console.log('patch form', obj);
     // for(let)
-    const template = {
-      label: obj.label,
-      text: obj.text,
-      type: obj.data_type
-    };
-    const formObj = { templateArray: [template] };
-
+    const templates = [];
+    obj.forEach(element => {
+      // console.log(element);
+      templates.push({
+        label: element.name,
+        text: '',
+        type: element.data_type
+      });
+      // this.addTemplate();
+    });
+    const formObj = { templateArray: [templates] };
+    // this.templateArray().push(templates);
     console.log(formObj);
-    this.templateForm.patchValue([
-      formObj
-    ]);
-    // this.templateFields.patchValue({
-    //   text: this.responseText
-    // });
+    this.templateForm.setValue({ formObj });
   }
+  // this.templateArray().patchValue([
+  //   templates
+  // ]);
+  // this.templateFields.patchValue({
+  //   text: this.responseText
+  // });
+  // }
   // tslint:disable-next-line: typedef
   // get f() { return this.uploadForm.controls; }
 
@@ -125,6 +137,6 @@ export class AnnotateComponent implements OnInit {
   }
   onSubmit() {
     console.log('onSubmit called');
-    console.log(this.templateForm.value);
+    console.log(this.templateForm);
   }
 }

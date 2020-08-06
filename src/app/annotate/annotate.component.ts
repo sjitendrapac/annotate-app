@@ -1,3 +1,4 @@
+import { LayoutModule } from '@angular/cdk/layout';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm, FormGroup, FormBuilder, FormArray } from '@angular/forms';
 // import { MatPaginator } from '@angular/material/paginator';
@@ -30,10 +31,11 @@ export class AnnotateComponent implements OnInit {
   data = [];
   responseText: string;
 
-  validTypes = [
-    { type: 'Numeric' },
-    { type: 'Alphanumeric' }
-  ];
+  validTypes;
+  // validTypes = [
+  //   { type: 'Numeric' },
+  //   { type: 'Alphanumeric' }
+  // ];
 
   constructor(private fb: FormBuilder, private aService: AnnotationdataService) {
     this.templateForm = this.fb.group({
@@ -48,17 +50,18 @@ export class AnnotateComponent implements OnInit {
 
 
   ngOnInit() {
-    this.addTemplate();
+    // this.addTemplate();
     this.aService.enableCanvas();
+    this.aService.getDataTypes().subscribe((res) => {
+      // console.log(res);
+      this.validTypes = res;
+    });
   }
 
   ngDoCheck() {
     this.data = this.aService.getData();
-
     // this.responseText = this.aService.getText();
-    // this.templateFields.patchValue({
-    //   text: this.responseText
-    // });
+
   }
 
   // tslint:disable-next-line: use-lifecycle-interface
@@ -87,12 +90,29 @@ export class AnnotateComponent implements OnInit {
     this.templateArray().removeAt(i);
   }
 
-  // tslint:disable-next-line: typedef
-  // get f() { return this.uploadForm.controls; }
+  patchForms(obj) {
+    let type;
+    obj.forEach(element => {
+      // console.log(element);
+      this.validTypes.forEach(t => {
+        if (t.id === element.data_type) {
+          type = t.name;
+        }
+      });
+      const template =
+        this.fb.group({
+          label: element.name,
+          text: '',
+          type: type,
+        });
+
+      this.templateArray().push(template);
+    });
+  }
 
   onTemplateSubmit(t) {
     // console.log('aaaaa', i);
-    // console.log('bbbbb', t.value);
+    console.log('bbbbb', t.value);
     // console.log(this.templateForm.value.templateArray[i]);
 
     const fieldData = {
@@ -108,6 +128,6 @@ export class AnnotateComponent implements OnInit {
   }
   onSubmit() {
     console.log('onSubmit called');
-    console.log(this.templateForm.value);
+    console.log(this.templateForm.controls);
   }
 }

@@ -336,7 +336,7 @@ export class KonvaShapeComponent implements OnInit {
 
   ngOnDestroy() {
     // console.log("ngondestroy");
-    localStorage.clear();
+    // localStorage.clear();
   }
 
   loadImage(src) {

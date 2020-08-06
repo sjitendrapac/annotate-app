@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm, FormGroup, FormBuilder } from '@angular/forms';
+import { NgForm, FormGroup, FormBuilder, FormArray } from '@angular/forms';
 // import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
@@ -19,7 +19,9 @@ export class AnnotateComponent implements OnInit {
 
   displayedColumns = ['label', 'type', 'text'];
 
+  templateForm: FormGroup;
   templateFields: FormGroup;
+  templateFieldsArray: FormArray;
 
   rectReady = false;
 
@@ -34,6 +36,9 @@ export class AnnotateComponent implements OnInit {
   ];
 
   constructor(private fb: FormBuilder, private aService: AnnotationdataService) {
+    this.templateForm = this.fb.group({
+      templateArray: this.fb.array([])
+    });
     this.subscription = aService.missionAnnounced$.subscribe(
       mission => {
         this.mission = mission;
@@ -43,19 +48,17 @@ export class AnnotateComponent implements OnInit {
 
 
   ngOnInit() {
-    this.templateFields = this.fb.group({
-      label: [''],
-      text: [''],
-      type: [''],
-    });
+    this.addTemplate();
+    this.aService.enableCanvas();
   }
 
   ngDoCheck() {
     this.data = this.aService.getData();
-    this.responseText = this.aService.getText();
-    this.templateFields.patchValue({
-      text: this.responseText
-    });
+
+    // this.responseText = this.aService.getText();
+    // this.templateFields.patchValue({
+    //   text: this.responseText
+    // });
   }
 
   // tslint:disable-next-line: use-lifecycle-interface
@@ -64,20 +67,47 @@ export class AnnotateComponent implements OnInit {
     this.subscription.unsubscribe();
   }
 
+  templateArray(): FormArray {
+    return this.templateForm.get('templateArray') as FormArray;
+  }
+
+  newTemplate(): FormGroup {
+    return this.fb.group({
+      label: '',
+      text: '',
+      type: '',
+    });
+  }
+
+  addTemplate() {
+    this.templateArray().push(this.newTemplate());
+  }
+
+  removeTemplate(i: number) {
+    this.templateArray().removeAt(i);
+  }
+
   // tslint:disable-next-line: typedef
   // get f() { return this.uploadForm.controls; }
 
-  onSubmit() {
-    // console.log(this.templateFields.controls);
+  onTemplateSubmit(t) {
+    // console.log('aaaaa', i);
+    // console.log('bbbbb', t.value);
+    // console.log(this.templateForm.value.templateArray[i]);
+
     const fieldData = {
-      label: this.templateFields.controls.label.value,
-      type: this.templateFields.controls.type.value,
-      text: this.templateFields.controls.text.value,
+      label: t.value.label,
+      type: t.value.type,
+      text: t.value.text,
     };
+    // console.log(fieldData);
     this.aService.postTemplateFieldData(fieldData).subscribe(res => {
       console.log(res);
-
     }, error => console.log(error));
-    // API Call to confirm field data.
+    //   // API Call to confirm field data.
+  }
+  onSubmit() {
+    console.log('onSubmit called');
+    console.log(this.templateForm.value);
   }
 }

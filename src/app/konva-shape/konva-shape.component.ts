@@ -112,7 +112,8 @@ export class KonvaShapeComponent implements OnInit {
         await pdf.getPage(i).then(async page => {
           var scale = 1;
           var viewport = page.getViewport({ scale: scale });
-
+          console.log(viewport);
+          console.log(page);
           //
           // Prepare canvas using PDF page dimensions
           const canvas = document.createElement('canvas');
@@ -150,12 +151,14 @@ export class KonvaShapeComponent implements OnInit {
     // console.log(this.parentEl);
     // console.log(this.parentEl.parentElement.offsetHeight);
     // console.log(this.parentEl.parentElement.offsetLeft);
+    console.log(window.screenX);
+    console.log(window.screenX);
     this.stage = new Konva.Stage({
       container: 'konvaContainer',
       width,
       height,
-      x: window.screenX,
-      y: window.screenY
+      // x: window.screenX,
+      // y: window.screenY
     });
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);

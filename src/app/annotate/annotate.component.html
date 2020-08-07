@@ -9,7 +9,7 @@
 
                 <div formArrayName="templateArray" class="row w-100 justify-content-center">
                     <form *ngFor="let template of templateArray().controls; let i=index" [formGroupName]="i"
-                        class="example-form">
+                        class="example-form" (click)="onSelect(template)">
                         <mat-form-field appearance="fill" class="form-field">
                             <input class="input-class" matInput formControlName="label" placeholder="Label">
                         </mat-form-field>

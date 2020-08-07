@@ -20,34 +20,43 @@ mat-expansion-panel {
 }
 
 .example-form {
-  min-width: 150px;
-  max-width: 500px;
-  width: 100%;
-  /* text-decoration-color: black; */
   color: white;
-  background: #3c4345;
+  background: #525252;
+  border-radius: 4px;
+  margin: 4px;
+}
+
+.example-form:hover {
   border: 2px solid #349388;
   border-radius: 4px;
 }
 
+/* .example-form::selection::-moz-selection {
+  border: 6px solid #349388;
+  border-radius: 4px;
+} */
+
 .input-class {
-  /* background-color: #1f2122; */
-  /* background-color: #1e1e1e; */
   color: #ffffff;
-  text-decoration-line: none;
-  text-decoration-style: none;
-  text-decoration-color: white;
+  caret-color: #349388;
 }
 .form-field {
   width: 125px;
-  /* margin-left: 6px; */
-  /* outline-color: #349388; */
-
-  /* background-color: #272727; */
 }
-/* .buttons {
-  background-color: #272727;
-} */
+
+.mat-input-element {
+  color: white;
+}
+.mat-card-css {
+  background-color: #1f2122;
+}
+::ng-deep.mat-select-value {
+  color: white !important;
+}
+
+::ng-deep.mat-expansion-indicator::after {
+  color: white;
+}
 
 ::-webkit-scrollbar {
   width: 10px;

@@ -21,8 +21,8 @@ export class AnnotateComponent implements OnInit {
   displayedColumns = ['label', 'type', 'text'];
 
   templateForm: FormGroup;
-  templateFields: FormGroup;
-  templateFieldsArray: FormArray;
+
+  savedTemplateFields;
 
   rectReady = false;
 
@@ -41,6 +41,7 @@ export class AnnotateComponent implements OnInit {
     this.templateForm = this.fb.group({
       templateArray: this.fb.array([])
     });
+
     this.subscription = aService.missionAnnounced$.subscribe(
       mission => {
         this.mission = mission;
@@ -88,6 +89,7 @@ export class AnnotateComponent implements OnInit {
   }
 
   patchForms(obj) {
+    this.savedTemplateFields = obj;
     this.aService.getDataTypes().subscribe((res) => {
       this.validTypes = res;
       let type;
@@ -105,15 +107,7 @@ export class AnnotateComponent implements OnInit {
           });
 
         this.templateArray().push(template);
-        const coordinates = {
-          pos: {
-            x: element.bounding_box_x_value,
-            y: element.bounding_box_y_value,
-          },
-          w: element.bounding_box_w_value,
-          h: element.bounding_box_h_value
-        };
-        this.aService.callKonvaComponent(coordinates);
+
       });
     });
   }
@@ -137,5 +131,24 @@ export class AnnotateComponent implements OnInit {
   onSubmit() {
     console.log('onSubmit called');
     console.log(this.templateForm.controls);
+  }
+
+  onSelect(f) {
+    console.log(f.value);
+
+    this.savedTemplateFields.find((t) => {
+      if (t.name == f.value.label) {
+        console.log(t.name);
+        const coordinates = {
+          pos: {
+            x: t.bounding_box_x_value,
+            y: t.bounding_box_y_value,
+          },
+          w: t.bounding_box_w_value,
+          h: t.bounding_box_h_value
+        };
+        this.aService.callKonvaComponent(coordinates);
+      }
+    });
   }
 }

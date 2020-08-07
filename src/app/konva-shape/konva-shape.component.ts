@@ -164,6 +164,11 @@ export class KonvaShapeComponent implements OnInit {
 
   addRectangleFromTemplate(coord) {
     // console.log(coord);
+    const rNodes = this.layer.find('Rect');
+    // this.layer.clear(rNodes);
+    rNodes.toArray().forEach(node => {
+      node.destroy();
+    });
     const pos = {
       x: coord.pos.x * this.imageWidth,
       y: coord.pos.y * this.imageHeight,
@@ -175,6 +180,7 @@ export class KonvaShapeComponent implements OnInit {
     rect = this.RectService.rectangle(pos, w, h);
     this.shapes.push(rect);
     this.layer.add(rect);
+    this.layer.batchDraw();
     this.addTransformerListeners();
   }
 

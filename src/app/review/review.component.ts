@@ -12,6 +12,7 @@ export class ReviewComponent implements OnInit {
   disableUntilComplete = true;
   templateId;
   templateFieldsArray;
+  disableAdd: true;
   @ViewChild(AnnotateComponent) annotate: AnnotateComponent;
   constructor(
     private router: Router,
@@ -24,7 +25,8 @@ export class ReviewComponent implements OnInit {
   }
 
   getTemplateFields() {
-    this.aService.viewTemplate(this.templateId).subscribe((res) => {
+    const obj = { id: this.templateId, pageNo: '' };
+    this.aService.viewTemplate(obj).subscribe((res) => {
       // console.log(res);
       this.templateFieldsArray = res;
       this.annotate.patchForms(this.templateFieldsArray);

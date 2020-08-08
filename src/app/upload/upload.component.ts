@@ -55,7 +55,6 @@ export class UploadComponent implements OnInit {
       const reader = new FileReader();
       console.log(e.target.files[0].name);
 
-
       reader.addEventListener('load', () => {
         this.imageSrc = reader.result;
       });
@@ -74,6 +73,7 @@ export class UploadComponent implements OnInit {
         });
         console.log(this.imageSrc);
         localStorage.setItem('file', this.imageSrc);
+        localStorage.setItem('fileName', e.target.files[0].name)
         this.router.navigate(['review']);
       });
       reader.readAsDataURL(e.target.files[0]);

@@ -60,8 +60,12 @@ export class AnnotationdataService {
     this.missionAnnouncedSource.next(mission);
   }
   // Service message commands
-  callKonvaComponent(coordinates) {
-    this.callKonvaSubject.next(coordinates);
+  callKonvaComponent(coordinates, page_number) {
+    const obj = {
+      coordinates,
+      page_number
+    }
+    this.callKonvaSubject.next(obj);
   }
 
   isPaintingEnabled() {
@@ -87,14 +91,16 @@ export class AnnotationdataService {
     return this.responseText;
   }
 
-  postCoordinates(coordinates, text) {
+  postCoordinates(coordinates, text, pageId) {
     console.log(coordinates);
     console.log(text);
     this.responseText = text;
+    this.templateField.page_number = pageId;
     this.templateField.bounding_box_x_value = coordinates.x.toFixed(5);
     this.templateField.bounding_box_y_value = coordinates.y.toFixed(5);
     this.templateField.bounding_box_w_value = coordinates.w.toFixed(5);
     this.templateField.bounding_box_h_value = coordinates.h.toFixed(5);
+
     this.templateField.bounding_box_x_label = coordinates.x.toFixed(5);
     this.templateField.bounding_box_y_label = coordinates.y.toFixed(5);
     this.templateField.bounding_box_w_label = coordinates.w.toFixed(5);
@@ -106,18 +112,15 @@ export class AnnotationdataService {
     this.templateField.abbreviation = data.label;
     this.templateField.name = data.label;
     this.templateField.label_name = data.label;
-    this.templateField.label_name = data.label;
-    this.templateField.data_type = 2;
+    this.templateField.data_type = data.type;
     this.templateField.created_by = 1;
     this.templateField.updated_by = 1;
-    this.templateField.page_number = 1;
     this.templateField.level = 1;
-    this.templateField.sequence_num = 1;
-    this.templateField.template = 1;
+    this.templateField.sequence_num = data.sequence_num;
+    this.templateField.template = data.template;
 
     this.allowPainting = false;
 
-    // const stringObj = JSON.stringify(this.templateField);
     console.log(this.templateField);
 
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
@@ -148,11 +151,16 @@ export class AnnotationdataService {
     const POST_URL: string = environment.API_BASE_URL + 'templates/';
     return this.http.post<any>(POST_URL, obj, { headers: params });
   }
+  getDocument(templateId): Observable<any> {
+    const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
+    const POST_URL: string = environment.API_BASE_URL + 'templates/' + templateId + '/';
+    return this.http.get<any>(POST_URL, { headers: params });
+  }
 
   viewTemplate(obj): Observable<any> {
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
     const POST_URL: string = environment.API_BASE_URL + 'template-fields/';
-    return this.http.get<any>(POST_URL, { params: { template: obj.id, page_number: "" }, headers: params });
+    return this.http.get<any>(POST_URL, { params: { template: obj.id, page_number: '' }, headers: params });
   }
 
   getDataTypes(): Observable<any> {
@@ -171,14 +179,15 @@ export class AnnotationdataService {
   }
 
   extractText(obj, page_num): Observable<any> {
-    //const stringObj = JSON.stringify(obj);
+    // const stringObj = JSON.stringify(obj);
     const object = {
       page_num: page_num,
       coordinates: obj
     };
+    const id = 2;
     console.log(object.page_num + "" + object.coordinates + "stringjson")
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
-    const POST_URL: string = environment.API_BASE_URL + 'templates/1/extract_text/';
+    const POST_URL: string = environment.API_BASE_URL + 'templates/' + id + '/extract_text/';
     return this.http.post<any>(POST_URL, object, { headers: params });
   }
 }

@@ -3,16 +3,16 @@
     <!-- <nb-container> -->
     <!-- </nb-container> -->
     <div *ngIf="pdfData.length">
-        <button mat-button style="color: #349388" (click)="loadNextPage(false)" *ngIf="pageId > 0">
+        <button mat-button style="color: #349388" (click)="loadNextPage(false)" *ngIf="pageId >= 0">
             <mat-icon>arrow_left</mat-icon>
         </button>
-        <button mat-button style="color: #349388" (click)="loadNextPage(true)" *ngIf="pageId < pdfData.length-1">
+        <button mat-button style="color: #349388" (click)="loadNextPage(true)" *ngIf="pageId < pdfData.length">
             <mat-icon>arrow_right</mat-icon>
         </button>
-    </div>
-    <ng-container #popOver="ngbPopover" [ngbPopover]="popContent">
+        <mat-card style="display: inline; ;background-color:rgba(90, 90, 90); color:white;">{{ pageId + "/" + pdfData.length}}</mat-card>
+    </div> 
+    <div #popOver="ngbPopover" [ngbPopover]="popContent"></div>
         <mat-card-content #konvaDivId id="konvaContainer" style="height:550px;min-width:700px; overflow-y: scroll"></mat-card-content>
-    </ng-container>
 </mat-card>
 
 <!-- <div mat-button #popOver="ngbPopover" [ngbPopover]="popContent"></div> -->

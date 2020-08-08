@@ -23,6 +23,7 @@ export class KonvaShapeComponent implements OnInit {
 
   @ViewChild('konvaDivId') konvaContainId: any;
   @ViewChild('popOver') popover: NgbPopover;
+  @ViewChild('labelPopOver') labelPopOver: NgbPopover;
   imageSrc: string;
   parentEl: Element;
   pdfData: String[] = [];
@@ -49,6 +50,7 @@ export class KonvaShapeComponent implements OnInit {
   subscription: Subscription;
   popoverNow = false;
   allowPaiting = false;
+  mouseMoved=false;
 
   constructor(
     private RectService: RectangleService,
@@ -92,12 +94,16 @@ export class KonvaShapeComponent implements OnInit {
     // }
     console.log(this.boxCoordinates, this.responseText);
     this.aService.postCoordinates(this.boxCoordinates, this.responseText);
+    this.popover.close();
+    //this.popover.ngbPopover.elementRef.nativeElement.remove()
   }
 
   openPopover(): void {
     console.log('open' + this.popover.isOpen());
     // this.maskEditorAppliedMessage = "Successfully Applied";
-    if (!this.popover.isOpen()) { this.popover.open(); }
+    if (!this.popover.isOpen()) {
+       this.popover.open(); 
+      }
   }
 
   createPdfToImage() {
@@ -281,8 +287,7 @@ export class KonvaShapeComponent implements OnInit {
         w: crop.width / imWidth,
         h: crop.height / imHeight
       };
-      console.log(coordinates);
-      this.aService.extractText(coordinates).subscribe((res) => {
+      this.aService.extractText(coordinates,this.pageId).subscribe((res) => {
         console.log(res);
         this.responseText = res.text;
         this.boxCoordinates = coordinates;
@@ -483,10 +488,12 @@ export class KonvaShapeComponent implements OnInit {
   loadNextPage(isNextTrue: boolean) {
     console.log(this.pdfData.length)
     if (isNextTrue && this.pageId < this.pdfData.length) {
-      this.pageId++;
-      this.loadImage(this.pdfData[this.pageId])
+      this.loadImage(this.pdfData[this.pageId++])
     } else if (this.pageId > 0) {
       this.pageId--;
+      if(this.pageId == this.pdfData.length-1){
+        this.pageId--;
+      }
       this.loadImage(this.pdfData[this.pageId])
     }
   }

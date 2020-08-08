@@ -23,6 +23,7 @@ export class KonvaShapeComponent implements OnInit {
 
   @ViewChild('konvaDivId') konvaContainId: any;
   @ViewChild('popOver') popover: NgbPopover;
+  @ViewChild('labelPopOver') labelPopOver: NgbPopover;
   imageSrc: string;
   parentEl: Element;
   pdfData: String[] = [];
@@ -49,6 +50,7 @@ export class KonvaShapeComponent implements OnInit {
   subscription: Subscription;
   popoverNow = false;
   allowPaiting = false;
+  mouseMoved = false;
 
   constructor(
     private RectService: RectangleService,
@@ -73,14 +75,17 @@ export class KonvaShapeComponent implements OnInit {
     this.config.triggers = 'manual';
     this.config.autoClose = 'outside';
     this.aService.konvaCalled$.subscribe((res) => {
-      console.log("subscribe worked");
-      this.addRectangleFromTemplate(res);
+      if (typeof (res) === 'boolean') {
+        this.allowPaiting = res;
+      } else {
+        this.addRectangleFromTemplate(res);
+      }
     });
   }
 
-  ngDoCheck() {
-    this.allowPaiting = this.aService.isPaintingEnabled();
-  }
+  // ngDoCheck() {
+  // this.allowPaiting = this.aService.isPaintingEnabled();
+  // }
 
   closePopover(): void {
     // this.maskEditorAppliedMessage = null;
@@ -92,12 +97,16 @@ export class KonvaShapeComponent implements OnInit {
     // }
     console.log(this.boxCoordinates, this.responseText);
     this.aService.postCoordinates(this.boxCoordinates, this.responseText);
+    this.popover.close();
+    //this.popover.ngbPopover.elementRef.nativeElement.remove()
   }
 
   openPopover(): void {
     console.log('open' + this.popover.isOpen());
     // this.maskEditorAppliedMessage = "Successfully Applied";
-    if (!this.popover.isOpen()) { this.popover.open(); }
+    if (!this.popover.isOpen()) {
+      this.popover.open();
+    }
   }
 
   createPdfToImage() {
@@ -112,15 +121,18 @@ export class KonvaShapeComponent implements OnInit {
         await pdf.getPage(i).then(async page => {
           var scale = 1;
           var viewport = page.getViewport({ scale: scale });
-
+          // console.log(viewport);
+          // console.log(page);
           //
           // Prepare canvas using PDF page dimensions
           const canvas = document.createElement('canvas');
           // var canvas = document.getElementById('the-canvas');
           var context = canvas.getContext('2d');
 
-          canvas.height = page.view[3];//this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
-          canvas.width = page.view[2];//this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
+          canvas.height = page.view[3];
+          //this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
+          canvas.width = page.view[2];
+          //this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
           // this.stage.width = page.view[2];
           // this.stage.height = page.view[3];
           this.stage.setSize({ width: page.view[2], height: page.view[3] });
@@ -150,12 +162,14 @@ export class KonvaShapeComponent implements OnInit {
     // console.log(this.parentEl);
     // console.log(this.parentEl.parentElement.offsetHeight);
     // console.log(this.parentEl.parentElement.offsetLeft);
+    // console.log(window.screenX);
+    // console.log(window.screenX);
     this.stage = new Konva.Stage({
       container: 'konvaContainer',
       width,
       height,
-      x: window.screenX,
-      y: window.screenY
+      // x: window.screenX,
+      // y: window.screenY
     });
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
@@ -206,7 +220,7 @@ export class KonvaShapeComponent implements OnInit {
       const pos = component.stage.getPointerPosition();
       component.startPos = pos;
       rect = component.RectService.rectangle(pos, w, h);
-      console.log('mousedown touchstart: pos' + pos.x + ' pos.y' + pos.y + ' w: ' + w + ' h:' + h);
+      // console.log('mousedown touchstart: pos' + pos.x + ' pos.y' + pos.y + ' w: ' + w + ' h:' + h);
       component.shapes.push(rect);
       component.layer.add(rect);
       component.addTransformerListeners();
@@ -247,24 +261,14 @@ export class KonvaShapeComponent implements OnInit {
         r.destroy();
       }
       const lastNode = rNodes[rNodes.length - 1];
-      console.log('mousedown touchend: ' + lastNode.attrs.x + '  lastNode.attrs.y' + lastNode.attrs.y +
-        ' lastNode.attrs.width: ' + lastNode.attrs.width + ' lastNode.attrs.height: ' + lastNode.attrs.height);
+      // console.log('mousedown touchend: ' + lastNode.attrs.x + '  lastNode.attrs.y' + lastNode.attrs.y +
+      //   ' lastNode.attrs.width: ' + lastNode.attrs.width + ' lastNode.attrs.height: ' + lastNode.attrs.height);
       const crop = {
         x: lastNode.attrs.x,
         y: lastNode.attrs.y,
         width: lastNode.attrs.width,
         height: lastNode.attrs.height,
       };
-      console.log(lastNode);
-      // const croppedRect = lastNode.toCanvas({
-      //   callback(img) {
-      //     console.log(img);
-      //   }
-      // });
-      // const i = croppedRect.toDataURL();
-      // console.log(croppedRect);
-      // console.log(i);
-
       component.layer.draw();
       // component.makeClientCrop(crop);
       // console.log(crop);
@@ -278,8 +282,7 @@ export class KonvaShapeComponent implements OnInit {
         w: crop.width / imWidth,
         h: crop.height / imHeight
       };
-      console.log(coordinates);
-      this.aService.extractText(coordinates).subscribe((res) => {
+      this.aService.extractText(coordinates, this.pageId).subscribe((res) => {
         console.log(res);
         this.responseText = res.text;
         this.boxCoordinates = coordinates;
@@ -289,6 +292,7 @@ export class KonvaShapeComponent implements OnInit {
       component.config.container = 'konvaDivId';
       // this.popoverNow = true;
       component.openPopover();
+      this.allowPaiting = false;
       // component.openModal(crop);
 
     });
@@ -480,10 +484,12 @@ export class KonvaShapeComponent implements OnInit {
   loadNextPage(isNextTrue: boolean) {
     console.log(this.pdfData.length)
     if (isNextTrue && this.pageId < this.pdfData.length) {
-      this.pageId++;
-      this.loadImage(this.pdfData[this.pageId])
+      this.loadImage(this.pdfData[this.pageId++])
     } else if (this.pageId > 0) {
       this.pageId--;
+      if (this.pageId == this.pdfData.length - 1) {
+        this.pageId--;
+      }
       this.loadImage(this.pdfData[this.pageId])
     }
   }

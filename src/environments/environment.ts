@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   // API_BASE_URL: 'http://5d02ef5a2611.ngrok.io/'
-  API_BASE_URL: 'http://800ac21a18e1.ngrok.io/'
+  API_BASE_URL: 'http://be2455925570.ngrok.io/'
 };
 
 /*

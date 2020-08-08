@@ -74,6 +74,7 @@ export class AnnotationdataService {
 
   enableCanvas() {
     this.allowPainting = true;
+    this.callKonvaSubject.next(this.allowPainting);
   }
   disableCanvas() {
     this.allowPainting = false;
@@ -143,18 +144,15 @@ export class AnnotationdataService {
   }
 
   addTemplate(obj): Observable<any> {
-    const stringObj = JSON.stringify(obj);
-
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
     const POST_URL: string = environment.API_BASE_URL + 'templates/';
-    return this.http.post<any>(POST_URL, stringObj, { headers: params });
+    return this.http.post<any>(POST_URL, obj, { headers: params });
   }
 
-  viewTemplate(id): Observable<any> {
-    // const obj = { id };
+  viewTemplate(obj): Observable<any> {
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
     const POST_URL: string = environment.API_BASE_URL + 'template-fields/';
-    return this.http.get<any>(POST_URL, { headers: params });
+    return this.http.get<any>(POST_URL, { params: { template: obj.id, page_number: "" }, headers: params });
   }
 
   getDataTypes(): Observable<any> {
@@ -172,12 +170,13 @@ export class AnnotationdataService {
     return this.http.post<any>(POST_URL, stringObj, { headers: params });
   }
 
-  extractText(obj): Observable<any> {
-    // const stringObj = JSON.stringify(obj);
+  extractText(obj, page_num): Observable<any> {
+    //const stringObj = JSON.stringify(obj);
     const object = {
+      page_num: page_num,
       coordinates: obj
     };
-
+    console.log(object.page_num + "" + object.coordinates + "stringjson")
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
     const POST_URL: string = environment.API_BASE_URL + 'templates/1/extract_text/';
     return this.http.post<any>(POST_URL, object, { headers: params });

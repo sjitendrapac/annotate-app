@@ -26,22 +26,22 @@ export class UploadComponent implements OnInit {
   templateArray = [];
 
   templateObject = {
-    "name": "",
-    "file_path": null,
-    "is_image": false,
-    "is_active": false,
-    "document_type": null,
-    "created_by": null,
-    "updated_by": null
+    'name': '',
+    'file_path': null,
+    'is_image': false,
+    'is_active': false,
+    'document_type': null,
+    'created_by': null,
+    'updated_by': null
   };
 
   documentObject = {
-    "file_name": "",
-    "file_path": null,
-    "status": null,
-    "is_active": false,
-    "batch": null,
-    "template": null
+    'file_name': '',
+    'file_path': null,
+    'status': null,
+    'is_active': false,
+    'batch': null,
+    'template': null
   };
 
   ngOnInit(): void {
@@ -53,22 +53,35 @@ export class UploadComponent implements OnInit {
   onSelectFile(e: { target: { files: string | any[]; }; }): void {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
+      console.log(e.target.files[0].name);
+
 
       reader.addEventListener('load', () => {
         this.imageSrc = reader.result;
       });
       reader.addEventListener('loadend', () => {
         this.imageLoaded = true;
+        const obj = {
+          name: e.target.files[0].name,
+          file_path: '/home/user/dev/ocr/django_project/ocr/docs/document_templates/',
+          document_type: 'Bill of Lading',
+          created_by: 'admin',
+          updated_by: 'admin',
+          data: this.imageSrc
+        }
+        this.aService.addTemplate(obj).subscribe((res) => {
+          console.log(res);
+        });
+        console.log(this.imageSrc);
         localStorage.setItem('file', this.imageSrc);
         this.router.navigate(['review']);
       });
       reader.readAsDataURL(e.target.files[0]);
-      // reader.readAsArrayBuffer(e.target.files[0]);
     }
   }
 
   viewTemplate(e) {
-    this.router.navigate(['review'], { queryParams: { templateId: e.id } });
+    this.router.navigate(['review'], { queryParams: { template: e.id } });
   }
 
   deleteWorksheet() { }

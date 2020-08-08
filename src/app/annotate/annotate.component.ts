@@ -52,14 +52,14 @@ export class AnnotateComponent implements OnInit {
 
   ngOnInit() {
     // this.addTemplate();
-    this.aService.enableCanvas();
+    // this.aService.enableCanvas();
+    // this.patchTextField();
 
   }
 
   ngDoCheck() {
     this.data = this.aService.getData();
-    // this.responseText = this.aService.getText();
-
+    this.responseText = this.aService.getText();
   }
 
   // tslint:disable-next-line: use-lifecycle-interface
@@ -103,7 +103,7 @@ export class AnnotateComponent implements OnInit {
           this.fb.group({
             label: element.name,
             text: '',
-            type: type,
+            type,
           });
 
         this.templateArray().push(template);
@@ -112,6 +112,19 @@ export class AnnotateComponent implements OnInit {
     });
   }
 
+  // patchTextField() {
+  //   console.log('patchtextfield');
+  //   // const template =
+  //   //       this.fb.group({
+  //   //         label: element.name,
+  //   //         text: this.responseText,
+  //   //         type,
+  //   //       });
+  //   console.log(this.templateArray());
+  //   const ta = this.templateArray();
+  //   ta.at(0).patchValue({ text: this.responseText });
+  //   // ta.patchValue([]);
+  // }
   onTemplateSubmit(t) {
     // console.log('aaaaa', i);
     console.log('bbbbb', t.value);
@@ -134,7 +147,7 @@ export class AnnotateComponent implements OnInit {
   }
 
   onSelect(f) {
-    console.log(f.value);
+    // console.log(f.value);
 
     this.savedTemplateFields.find((t) => {
       if (t.name == f.value.label) {

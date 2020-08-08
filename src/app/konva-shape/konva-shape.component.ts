@@ -23,8 +23,6 @@ export class KonvaShapeComponent implements OnInit {
 
   @ViewChild('konvaDivId') konvaContainId: any;
   @ViewChild('popOver') popover: NgbPopover;
-  zoomFactor:number= .10;
-  defaultScale:number =1;
   imageSrc: string;
   parentEl: Element;
   pdfData: String[] = [];
@@ -70,7 +68,7 @@ export class KonvaShapeComponent implements OnInit {
     if (this.imageSrc.indexOf('application/pdf') != -1) {
       this.createPdfToImage();
     } else {
-      this.loadImage(this.imageSrc, this.stage.scaleX());
+      this.loadImage(this.imageSrc);
     }
     this.config.triggers = 'manual';
     this.config.autoClose = 'outside';
@@ -134,7 +132,7 @@ export class KonvaShapeComponent implements OnInit {
             data = await canvas.toDataURL('image/jpeg');
             this.pdfData.push(data);
             if (i == 1) {
-              this.loadImage(data, this.stage.scaleX());
+              this.loadImage(data);
               // console.log("new data: "+ data);
             }
           });
@@ -145,7 +143,6 @@ export class KonvaShapeComponent implements OnInit {
     });
     // console.log(this.pdfData);
   }
-  
 
   setupKonva() {
     const width = this.parentEl.children[0].children[1].clientWidth;    //this.parentEl.children[0].clientWidth;
@@ -198,7 +195,7 @@ export class KonvaShapeComponent implements OnInit {
       x: 0,
       y: 0,
     };
-    this.stage.on('mousedown touchstart', (event) => {
+    this.stage.on('mousedown touchstart', () => {
       if (component.rectSelected) {
         return;
       }
@@ -207,7 +204,6 @@ export class KonvaShapeComponent implements OnInit {
       }
       isPaint = true;
       const pos = component.stage.getPointerPosition();
-      this.relativeScalePostion(pos,event);
       component.startPos = pos;
       rect = component.RectService.rectangle(pos, w, h);
       console.log('mousedown touchstart: pos' + pos.x + ' pos.y' + pos.y + ' w: ' + w + ' h:' + h);
@@ -217,12 +213,11 @@ export class KonvaShapeComponent implements OnInit {
       // this.closePopover();
     });
 
-    this.stage.on('mouseup touchend', (event) => {
+    this.stage.on('mouseup touchend', () => {
       if (!this.allowPaiting) {
         return;
       }
       const pos = component.stage.getPointerPosition();
-      this.relativeScalePostion(pos,event);
       component.layer.batchDraw();
       w = pos.x - component.startPos.x;
       h = pos.y - component.startPos.y;
@@ -254,8 +249,7 @@ export class KonvaShapeComponent implements OnInit {
       const lastNode = rNodes[rNodes.length - 1];
       console.log('mousedown touchend: ' + lastNode.attrs.x + '  lastNode.attrs.y' + lastNode.attrs.y +
         ' lastNode.attrs.width: ' + lastNode.attrs.width + ' lastNode.attrs.height: ' + lastNode.attrs.height);
-        
-        const crop = {
+      const crop = {
         x: lastNode.attrs.x,
         y: lastNode.attrs.y,
         width: lastNode.attrs.width,
@@ -272,19 +266,17 @@ export class KonvaShapeComponent implements OnInit {
       // console.log(i);
 
       component.layer.draw();
-       component.makeClientCrop(crop);
+      // component.makeClientCrop(crop);
       // console.log(crop);
       const imageNodes = this.layer.find('Image');
-      const image = imageNodes[imageNodes.length - 1];      
+      const image = imageNodes[imageNodes.length - 1];
       const imWidth = image.attrs.image.naturalWidth;
       const imHeight = image.attrs.image.naturalHeight;
-      const scaleX = imWidth / this.stage.width();
-      const scaleY = imHeight / this.stage.height();
       const coordinates = {
-        x: crop.x*scaleX / imWidth,
-        y: crop.y*scaleY / imHeight,
-        w: crop.width*scaleX / imWidth,
-        h: crop.height*scaleY / imHeight
+        x: crop.x / imWidth,
+        y: crop.y / imHeight,
+        w: crop.width / imWidth,
+        h: crop.height / imHeight
       };
       console.log(coordinates);
       this.aService.extractText(coordinates).subscribe((res) => {
@@ -301,7 +293,7 @@ export class KonvaShapeComponent implements OnInit {
 
     });
     // and core function - drawing
-    this.stage.on('mousemove touchmove', (event) => {
+    this.stage.on('mousemove touchmove', () => {
       if (!isPaint) {
         return;
       }
@@ -309,7 +301,6 @@ export class KonvaShapeComponent implements OnInit {
         return;
       }
       const pos = component.stage.getPointerPosition();
-      this.relativeScalePostion(pos,event);
       w = pos.x - component.startPos.x;
       h = pos.y - component.startPos.y;
       // rect.attrs.x = pos.x;
@@ -376,7 +367,7 @@ export class KonvaShapeComponent implements OnInit {
     // localStorage.clear();
   }
 
-  loadImage(src, currentScale) {
+  loadImage(src) {
     // console.log('inside loadimage');
 
     const imageObj = new Image();
@@ -388,10 +379,10 @@ export class KonvaShapeComponent implements OnInit {
 
       // if (imageObj.naturalHeight && imageObj.naturalWidth) {
 
-      const w = imageObj.naturalWidth*currentScale;
-      const h = imageObj.naturalHeight*currentScale;
-      // this.imageWidth = imageObj.naturalWidth*currentScale;
-      // this.imageHeight = imageObj.naturalHeight*currentScale;
+      const w = imageObj.naturalWidth;
+      const h = imageObj.naturalHeight;
+      this.imageWidth = imageObj.naturalWidth;
+      this.imageHeight = imageObj.naturalHeight;
       this.stage.setSize({ width: w, height: h });
       const padding = 10;
       const targetW = this.stage.width();// - (2 * padding);
@@ -490,56 +481,10 @@ export class KonvaShapeComponent implements OnInit {
     console.log(this.pdfData.length)
     if (isNextTrue && this.pageId < this.pdfData.length) {
       this.pageId++;
-      this.loadImage(this.pdfData[this.pageId], this.stage.scaleX());
+      this.loadImage(this.pdfData[this.pageId])
     } else if (this.pageId > 0) {
       this.pageId--;
-      this.loadImage(this.pdfData[this.pageId], this.stage.scaleX())
+      this.loadImage(this.pdfData[this.pageId])
     }
   }
-
-  relativeScalePostion(pos, event){
-    // const stage = event.target.getStage();
-    
-    // const mousePointTo = {
-    //   x: stage.getPointerPosition().x / this.defaultScale - stage.x() / this.defaultScale,
-    //   y: stage.getPointerPosition().y / this.defaultScale - stage.y() / this.defaultScale
-    // };
-    // const newScale = (event.evt.screenY-event.evt.clientY) > 0 ? this.defaultScale * this.stage.scaleX() : this.defaultScale / this.stage.scaleX();
-    if(this.stage.scaleX()>1){
-    pos.x = this.stage.getPointerPosition().x / this.stage.scaleX();//(mousePointTo.x - (stage.getPointerPosition().x * newScale));
-    pos.y=  this.stage.getPointerPosition().y / this.stage.scaleX();//(mousePointTo.y - (stage.getPointerPosition().y * newScale));
-    }else{
-      pos.x = this.stage.getPointerPosition().x * this.stage.scaleX();//(mousePointTo.x - (stage.getPointerPosition().x * newScale));
-      pos.y=  this.stage.getPointerPosition().y * this.stage.scaleX();//(mousePointTo.y - (stage.getPointerPosition().y * newScale));
-   
-
-    }
-    return pos;
-  }
-
-  zoomIn(){
-    if(this.stage.scaleX()< 2){
-      const scale = this.stage.scaleX() + this.zoomFactor;
-  
-      this.stage.scale({x: scale,y:scale});
-      // this.layer.scale({x: scale,y:scale});
-      // this.layer.draw();
-      this.loadImage(this.pdfData[this.pageId-1], this.stage.scaleX());
-    }
-  }
-
-
-  zoomOut(){
-    if(this.stage.scaleX()>1){
-        const scale = this.stage.scaleX() - this.zoomFactor;
-        this.stage.scale({x: scale,y:scale});
-        // this.layer.scale({x: scale,y:scale});
-        // this.layer.draw();
-        this.loadImage(this.pdfData[this.pageId-1], this.stage.scaleX());
-    }
-  }
-    reset(){
-      this.stage.scale({x: this.defaultScale,y:this.defaultScale});
-      this.loadImage(this.pdfData[this.pageId-1], this.stage.scaleX());
-    }
 }

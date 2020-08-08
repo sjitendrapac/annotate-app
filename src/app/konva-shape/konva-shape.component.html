@@ -10,23 +10,9 @@
             <mat-icon>arrow_right</mat-icon>
         </button>
     </div>
-    <div >
-        <button mat-button style="color: #349388" (click)="zoomIn()">
-            <mat-icon>zoom_in</mat-icon>
-        </button>
-        <button mat-button style="color: #349388" (click)="zoomOut()" >
-            <mat-icon>zoom_out</mat-icon>
-        </button>
-        <button mat-button style="color: #349388" (click)="reset()" >
-            <mat-icon>restore</mat-icon>
-        </button>
-    </div>
-    
-    <!-- <div style="height:550px;min-width:700px; overflow-x: scroll;overflow-y: scroll"> -->
     <ng-container #popOver="ngbPopover" [ngbPopover]="popContent">
-        <mat-card-content #konvaDivId id="konvaContainer"></mat-card-content>
+        <mat-card-content #konvaDivId id="konvaContainer" style="height:550px;min-width:700px; overflow-y: scroll"></mat-card-content>
     </ng-container>
-    <!-- </div> -->
 </mat-card>
 
 <!-- <div mat-button #popOver="ngbPopover" [ngbPopover]="popContent"></div> -->

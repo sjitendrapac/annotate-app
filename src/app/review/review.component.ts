@@ -19,7 +19,7 @@ export class ReviewComponent implements OnInit {
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.templateId = this.route.snapshot.queryParams.templateId;
+    this.templateId = this.route.snapshot.queryParams.template;
     this.getTemplateFields();
   }
 

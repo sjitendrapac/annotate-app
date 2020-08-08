@@ -10,11 +10,11 @@
             </button>
         </div>
         <mat-card>
-            <app-annotate></app-annotate>
+            <app-annotate [templateId]="templateId"></app-annotate>
         </mat-card>
     </div>
     <div class="col-md-7  h-100" style="height:550px;min-width:700px;">
         <!-- <app-konva-shape class="component" [imageSrc]="imageSrc" *ngIf="imageLoaded"> -->
-        <app-konva-shape class="component"></app-konva-shape>
+        <app-konva-shape class="component" [templateId]="templateId"></app-konva-shape>
     </div>
 </div>

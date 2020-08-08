@@ -1,5 +1,6 @@
+import { ReviewComponent } from './../review/review.component';
 import { LayoutModule } from '@angular/cdk/layout';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { NgForm, FormGroup, FormBuilder, FormArray } from '@angular/forms';
 // import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -16,6 +17,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 
 export class AnnotateComponent implements OnInit {
   // @ViewChild(MatPaginator) paginator: MatPaginator;
+  // tslint:disable-next-line: no-input-rename
+  @Input('templateId') templateId;
   dataSource = new MatTableDataSource<any>();
 
   displayedColumns = ['label', 'type', 'text'];
@@ -125,17 +128,31 @@ export class AnnotateComponent implements OnInit {
   //   ta.at(0).patchValue({ text: this.responseText });
   //   // ta.patchValue([]);
   // }
-  onTemplateSubmit(t) {
+  onTemplateSubmit(t, i) {
     // console.log('aaaaa', i);
-    console.log('bbbbb', t.value);
+    // console.log('bbbbb', t.value.type);
+    // console.log('bbbbb', this.validTypes);
+    // console.log('bbbbb', i);
     // console.log(this.templateForm.value.templateArray[i]);
+    let typeId;
+    this.validTypes.forEach(type => {
+      // console.log(type.name);
+      // console.log(t.value.type);
+      if (type.name === t.value.type) {
+        // console.log("inside if");
+        typeId = type.id;
+      }
+    });
 
+    console.log(this.templateId);
     const fieldData = {
       label: t.value.label,
-      type: t.value.type,
+      type: typeId,
       text: t.value.text,
+      sequence_num: i,
+      template: this.templateId,
     };
-    // console.log(fieldData);
+    console.log(fieldData);
     this.aService.postTemplateFieldData(fieldData).subscribe(res => {
       console.log(res);
     }, error => console.log(error));
@@ -151,7 +168,8 @@ export class AnnotateComponent implements OnInit {
 
     this.savedTemplateFields.find((t) => {
       if (t.name == f.value.label) {
-        console.log(t.name);
+        console.log(t);
+
         const coordinates = {
           pos: {
             x: t.bounding_box_x_value,
@@ -160,7 +178,7 @@ export class AnnotateComponent implements OnInit {
           w: t.bounding_box_w_value,
           h: t.bounding_box_h_value
         };
-        this.aService.callKonvaComponent(coordinates);
+        this.aService.callKonvaComponent(coordinates, t.page_number);
       }
     });
   }

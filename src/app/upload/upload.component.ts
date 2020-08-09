@@ -55,26 +55,28 @@ export class UploadComponent implements OnInit {
       const reader = new FileReader();
       console.log(e.target.files[0].name);
 
-
       reader.addEventListener('load', () => {
         this.imageSrc = reader.result;
       });
       reader.addEventListener('loadend', () => {
         this.imageLoaded = true;
+        const name = e.target.files[0].name.split('.');
+        console.log(name);
         const obj = {
-          name: e.target.files[0].name,
-          file_path: '/home/user/dev/ocr/django_project/ocr/docs/document_templates/',
-          document_type: 'Bill of Lading',
-          created_by: 'admin',
-          updated_by: 'admin',
-          data: this.imageSrc
-        }
+          name: name[0],
+          document_type: 1,
+          created_by: 1,
+          updated_by: 1,
+          file: this.imageSrc
+        };
+
         this.aService.addTemplate(obj).subscribe((res) => {
           console.log(res);
+          this.router.navigate(['review'], { queryParams: { template: res.id } });
         });
-        console.log(this.imageSrc);
-        localStorage.setItem('file', this.imageSrc);
-        this.router.navigate(['review']);
+        // console.log(this.imageSrc);
+        // localStorage.setItem('file', this.imageSrc);
+        // localStorage.setItem('fileName', e.target.files[0].name)
       });
       reader.readAsDataURL(e.target.files[0]);
     }

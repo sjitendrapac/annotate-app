@@ -1,15 +1,16 @@
 <mat-card class="justify-content-center">
-    <mat-card-subtitle> invoice </mat-card-subtitle>
+    <mat-card-subtitle> {{ fileName }} </mat-card-subtitle>
     <!-- <nb-container> -->
     <!-- </nb-container> -->
     <div *ngIf="pdfData.length">
-        <button mat-button style="color: #349388" (click)="loadNextPage(false)" *ngIf="pageId >= 0">
+        <button mat-button style="color: #349388" (click)="loadNextPage(false)" *ngIf="page_num > 0">
             <mat-icon>arrow_left</mat-icon>
         </button>
         <button mat-button style="color: #349388" (click)="loadNextPage(true)" *ngIf="pageId < pdfData.length">
             <mat-icon>arrow_right</mat-icon>
         </button>
-        <mat-card style="display: inline; ;background-color:rgba(90, 90, 90); color:white;">{{ pageId + "/" + pdfData.length}}</mat-card>
+        <mat-card style="display: inline; ;background-color:rgba(90, 90, 90); color:white;">{{ page_num + "/" + pdfData.length}}</mat-card>
+        
     </div> 
     <div >
         <button mat-button style="color: #349388" (click)="zoomIn()">
@@ -35,6 +36,9 @@
         <mat-card-content>{{responseText}}
             <button mat-icon-button (click)="closePopover()">
                 <mat-icon>check_circle_outline</mat-icon>
+            </button>
+            <button mat-icon-button (click)="popOver.close()">
+                <mat-icon>clear</mat-icon>
             </button>
         </mat-card-content>
     </mat-card>

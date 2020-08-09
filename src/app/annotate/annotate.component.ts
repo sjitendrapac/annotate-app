@@ -20,6 +20,7 @@ export class AnnotateComponent implements OnInit {
   // tslint:disable-next-line: no-input-rename
   @Input('templateId') templateId;
   dataSource = new MatTableDataSource<any>();
+  fieldSubmitted: true;
 
   displayedColumns = ['label', 'type', 'text'];
 
@@ -129,22 +130,13 @@ export class AnnotateComponent implements OnInit {
   //   // ta.patchValue([]);
   // }
   onTemplateSubmit(t, i) {
-    // console.log('aaaaa', i);
-    // console.log('bbbbb', t.value.type);
-    // console.log('bbbbb', this.validTypes);
-    // console.log('bbbbb', i);
-    // console.log(this.templateForm.value.templateArray[i]);
     let typeId;
     this.validTypes.forEach(type => {
-      // console.log(type.name);
-      // console.log(t.value.type);
       if (type.name === t.value.type) {
-        // console.log("inside if");
         typeId = type.id;
       }
     });
 
-    console.log(this.templateId);
     const fieldData = {
       label: t.value.label,
       type: typeId,
@@ -152,9 +144,10 @@ export class AnnotateComponent implements OnInit {
       sequence_num: i,
       template: this.templateId,
     };
-    console.log(fieldData);
+    // console.log(fieldData);
     this.aService.postTemplateFieldData(fieldData).subscribe(res => {
       console.log(res);
+      this.fieldSubmitted = true;
     }, error => console.log(error));
     //   // API Call to confirm field data.
   }
@@ -164,10 +157,8 @@ export class AnnotateComponent implements OnInit {
   }
 
   onSelect(f) {
-    // console.log(f.value);
-
     this.savedTemplateFields.find((t) => {
-      if (t.name == f.value.label) {
+      if (t.name === f.value.label) {
         console.log(t);
 
         const coordinates = {

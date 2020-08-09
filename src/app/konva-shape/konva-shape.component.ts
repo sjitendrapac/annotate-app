@@ -48,6 +48,7 @@ export class KonvaShapeComponent implements OnInit {
   shapes: any = [];
   stage: Konva.Stage;
   layer: Konva.Layer;
+  konvaRect: Konva.Rect;
   rectangle = true;
   erase = false;
   rectSelected = false;
@@ -86,9 +87,11 @@ export class KonvaShapeComponent implements OnInit {
     this.config.triggers = 'manual';
     this.config.autoClose = 'outside';
     this.aService.konvaCalled$.subscribe((res) => {
-      console.log("subscribe worked");
-      console.log(res);
-      this.addRectangleFromTemplate(res);
+      if (typeof (res) === 'boolean') {
+        this.allowPaiting = res;
+      } else {
+        this.addRectangleFromTemplate(res);
+      }
     });
   }
 
@@ -192,8 +195,6 @@ export class KonvaShapeComponent implements OnInit {
       node.destroy();
     });
 
-    console.log(this.imageHeight);
-    console.log(this.imageWidth);
     const pos = {
       x: obj.coordinates.pos.x * this.imageWidth,
       y: obj.coordinates.pos.y * this.imageHeight,
@@ -201,16 +202,21 @@ export class KonvaShapeComponent implements OnInit {
     const w = obj.coordinates.w * this.imageWidth;
     const h = obj.coordinates.h * this.imageHeight;
     let rect: Konva.Rect;
-    // console.log('Predefined Rectangles: pos.x' + pos.x + ' pos.y' + pos.y + ' w: ' + w + ' h:' + h);
-
-    // TODO: Jump to page using obj.page_number to draw the rectangle.;
 
     rect = this.RectService.rectangle(pos, w, h);
     this.shapes.push(rect);
     this.layer.add(rect);
     this.layer.batchDraw();
     this.addTransformerListeners();
+    // rect.on('')
+    rect.on('transformend', () => {
+      console.log('transform ended');
+    });
   }
+
+  // rectTransforming() {
+
+  // }
 
 
   addLineListeners() {
@@ -286,15 +292,6 @@ export class KonvaShapeComponent implements OnInit {
         height: lastNode.attrs.height,
       };
       console.log(lastNode);
-      // const croppedRect = lastNode.toCanvas({
-      //   callback(img) {
-      //     console.log(img);
-      //   }
-      // });
-      // const i = croppedRect.toDataURL();
-      // console.log(croppedRect);
-      // console.log(i);
-
       component.layer.draw();
       // component.makeClientCrop(crop);
       // console.log(crop);
@@ -302,13 +299,23 @@ export class KonvaShapeComponent implements OnInit {
       const image = imageNodes[imageNodes.length - 1];
       const imWidth = image.attrs.image.naturalWidth;
       const imHeight = image.attrs.image.naturalHeight;
+
+      console.log(Object.values(crop));
+      if (crop.x < 0) {
+        crop.x = crop.x * -1;
+      }
+      if (crop.y < 0) {
+        crop.y = crop.y * -1;
+      }
+      console.log(crop);
       const coordinates = {
         x: crop.x / this.stage.scaleX() / imWidth,
         y: crop.y / this.stage.scaleY() / imHeight,
         w: crop.width / this.stage.scaleX() / imWidth,
         h: crop.height / this.stage.scaleY() / imHeight
       };
-      this.aService.extractText(coordinates, this.page_num).subscribe((res) => {
+      console.log(coordinates);
+      this.aService.extractText(coordinates, this.templateId, this.page_num).subscribe((res) => {
         console.log(res);
         this.responseText = res.text;
         this.boxCoordinates = coordinates;
@@ -343,6 +350,7 @@ export class KonvaShapeComponent implements OnInit {
       component.shapes[currShapeIndex] = rect;
       component.layer.batchDraw();
     });
+
   }
   undo() {
     const removedShape = this.shapes.pop();
@@ -356,18 +364,23 @@ export class KonvaShapeComponent implements OnInit {
   }
   addTransformerListeners() {
     const component = this;
-    const tr = new Konva.Transformer();
+    let selectedRect: Konva.Rect;
+    const tr = new Konva.Transformer({
+      rotateEnabled: false,
+
+    });
     this.stage.on('click', function (e) {
       if (!this.clickStartShape) {
         return;
       }
-      if ((e.target._id == this.clickStartShape._id)
+      if ((e.target._id === this.clickStartShape._id)
         && (e.target.attrs.id !== 'imageNode')) {
         component.rectSelected = true;
         component.addDeleteListener(e.target);
         component.layer.add(tr);
         tr.attachTo(e.target);
         component.transformers.push(tr);
+        console.log("isTransforming()", e.target)
         component.layer.draw();
       } else {
         component.rectSelected = false;
@@ -375,6 +388,9 @@ export class KonvaShapeComponent implements OnInit {
         component.layer.draw();
       }
     });
+
+
+
   }
   addDeleteListener(shape: import('konva/types/Stage').Stage | import('konva/types/Shape').Shape<import('konva/types/Shape').ShapeConfig>) {
     const component = this;

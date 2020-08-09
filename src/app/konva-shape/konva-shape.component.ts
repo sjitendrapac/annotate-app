@@ -48,6 +48,7 @@ export class KonvaShapeComponent implements OnInit {
   shapes: any = [];
   stage: Konva.Stage;
   layer: Konva.Layer;
+  konvaRect: Konva.Rect;
   rectangle = true;
   erase = false;
   rectSelected = false;
@@ -73,7 +74,7 @@ export class KonvaShapeComponent implements OnInit {
       if (this.imageSrc.indexOf('application/pdf') != -1) {
         this.createPdfToImage();
       } else {
-        this.loadImage(this.imageSrc, this.stage.scaleX(), undefined);
+        this.loadImage(this.imageSrc, this.stage.scaleX());
       }
     });
     this.parentEl = this.el.nativeElement;
@@ -86,9 +87,11 @@ export class KonvaShapeComponent implements OnInit {
     this.config.triggers = 'manual';
     this.config.autoClose = 'outside';
     this.aService.konvaCalled$.subscribe((res) => {
-      console.log("subscribe worked");
-      console.log(res);
-      this.addRectangleFromTemplate(res);
+      if (typeof (res) === 'boolean') {
+        this.allowPaiting = res;
+      } else {
+        this.addRectangleFromTemplate(res);
+      }
     });
   }
 
@@ -97,17 +100,26 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   closePopover(): void {
-    // this.maskEditorAppliedMessage = null;
-
-    // console.log('close' + this.popover.isOpen());
-    // if (this.popover.isOpen()) {
-    //   console.log('close kro popover');
-    //   this.popover.close();
-    // }
-    console.log(this.boxCoordinates, this.responseText);
+    console.log(this.boxCoordinates, this.responseText, this.pageId);
     this.aService.postCoordinates(this.boxCoordinates, this.responseText, this.pageId);
+    this.clearRectangles();
     this.popover.close();
     //this.popover.ngbPopover.elementRef.nativeElement.remove()
+  }
+
+  incorrectText() {
+    console.log('incorrectText');
+    this.clearRectangles();
+    this.popover.close();
+  }
+
+  clearRectangles() {
+    const rNodes = this.layer.find('Rect');
+    rNodes.toArray().forEach(node => {
+      console.log('inside', node);
+      node.destroy();
+    });
+    this.layer.batchDraw();
   }
 
   openPopover(): void {
@@ -128,37 +140,45 @@ export class KonvaShapeComponent implements OnInit {
       //
       for (var i = 1; i <= pdf.numPages; i++) {
         await pdf.getPage(i).then(async page => {
-          var scale = 1;
+          // var scale = 1;
+          console.log('DevicePixelRatio', window.devicePixelRatio);
+
+          var scale = window.devicePixelRatio;
           var viewport = page.getViewport({ scale: scale });
-          // console.log(viewport);
-          // console.log(page);
-          //
           // Prepare canvas using PDF page dimensions
           const canvas = document.createElement('canvas');
           // var canvas = document.getElementById('the-canvas');
           var context = canvas.getContext('2d');
 
-          canvas.height = page.view[3];//this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
-          canvas.width = page.view[2];//this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
+          // console.log(page.view);
+          canvas.height = page.view[3] * scale;//this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
+          canvas.width = page.view[2] * scale;//this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
           // this.stage.width = page.view[2];
           // this.stage.height = page.view[3];
-          this.stage.setSize({ width: page.view[2], height: page.view[3] });
+
+          this.stage.setSize({ width: page.view[2] * scale, height: page.view[3] * scale });
           // Render PDF page into canvas context
           //
-          var task = page.render({ canvasContext: context, viewport: viewport })
+          var task = page.render({ canvasContext: context, viewport: viewport });
           var data;
           await task.promise.then(async () => {
-            data = await canvas.toDataURL('image/jpeg');
+            data = await canvas.toDataURL('image/png', 1);
             this.pdfData.push(data);
-            if (i == 1) {
+            if (i === 1) {
               this.pageId++;
-              this.loadImage(data, this.stage.scaleX(), undefined);
+              console.log(this.stage.scaleX());
+              if (window.devicePixelRatio > 1.5) {
+                const zoomOut = this.stage.scaleX() - 0.5;
+                this.loadImage(data, zoomOut);
+              } else {
+                this.loadImage(data, this.stage.scaleX());
+              }
               // console.log("new data: "+ data);
             }
           });
         });
       }
-    }, function (error) {
+    }, (error) => {
       console.log(error);
     });
     // console.log(this.pdfData);
@@ -185,37 +205,25 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   addRectangleFromTemplate(obj) {
-    console.log(obj);
-    this.page_num=obj.page_number;
-this.pageId= obj.page_number;
-console.log("---------------------call load page---------")
-this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;    
-  }
+    this.clearRectangles();
 
-
-  private showSelectionForLabel(obj: any) {
-    const rNodes = this.layer.find('Rect');
-    // this.layer.clear(rNodes);
-    rNodes.toArray().forEach(node => {
-      node.destroy();
-    });
-
-    console.log(this.imageHeight);
-    console.log(this.imageWidth);
     const pos = {
-      x: obj.coordinates.pos.x * this.imageWidth * this.stage.scaleX(),
-      y: obj.coordinates.pos.y * this.imageHeight * this.stage.scaleY(),
+      x: obj.coordinates.pos.x * this.imageWidth,
+      y: obj.coordinates.pos.y * this.imageHeight,
     };
-    const w = obj.coordinates.w * this.imageWidth * this.stage.scaleX();
-    const h = obj.coordinates.h * this.imageHeight * this.stage.scaleY();
+    const w = obj.coordinates.w * this.imageWidth;
+    const h = obj.coordinates.h * this.imageHeight;
     let rect: Konva.Rect;
-    // console.log('Predefined Rectangles: pos.x' + pos.x + ' pos.y' + pos.y + ' w: ' + w + ' h:' + h);
-    // TODO: Jump to page using obj.page_number to draw the rectangle.;
+
     rect = this.RectService.rectangle(pos, w, h);
     this.shapes.push(rect);
     this.layer.add(rect);
     this.layer.batchDraw();
     this.addTransformerListeners();
+    // rect.on('')
+    rect.on('transformend', () => {
+      console.log('transform ended');
+    });
   }
 
   addLineListeners() {
@@ -251,6 +259,7 @@ this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;
       if (!this.allowPaiting) {
         return;
       }
+      this.allowPaiting = false;
       const pos = component.stage.getPointerPosition();
       this.relativeScalePostion(pos);
       component.layer.batchDraw();
@@ -291,15 +300,6 @@ this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;
         height: lastNode.attrs.height,
       };
       console.log(lastNode);
-      // const croppedRect = lastNode.toCanvas({
-      //   callback(img) {
-      //     console.log(img);
-      //   }
-      // });
-      // const i = croppedRect.toDataURL();
-      // console.log(croppedRect);
-      // console.log(i);
-
       component.layer.draw();
       // component.makeClientCrop(crop);
       // console.log(crop);
@@ -307,18 +307,29 @@ this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;
       const image = imageNodes[imageNodes.length - 1];
       const imWidth = image.attrs.image.naturalWidth;
       const imHeight = image.attrs.image.naturalHeight;
+
+      console.log(Object.values(crop));
+      if (crop.x < 0) {
+        crop.x = crop.x * -1;
+      }
+      if (crop.y < 0) {
+        crop.y = crop.y * -1;
+      }
+      console.log(crop);
       const coordinates = {
         x: crop.x / this.stage.scaleX() / imWidth,
         y: crop.y / this.stage.scaleY() / imHeight,
         w: crop.width / this.stage.scaleX() / imWidth,
         h: crop.height / this.stage.scaleY() / imHeight
       };
-      this.aService.extractText(coordinates, this.page_num).subscribe((res) => {
+      console.log(coordinates);
+      this.aService.extractText(coordinates, this.templateId, this.page_num).subscribe((res) => {
         console.log(res);
         this.responseText = res.text;
         this.boxCoordinates = coordinates;
       }, err => {
         console.log(err);
+        this.allowPaiting = true;
       });
       component.config.container = 'konvaDivId';
       // this.popoverNow = true;
@@ -348,6 +359,7 @@ this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;
       component.shapes[currShapeIndex] = rect;
       component.layer.batchDraw();
     });
+
   }
   undo() {
     const removedShape = this.shapes.pop();
@@ -361,18 +373,23 @@ this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;
   }
   addTransformerListeners() {
     const component = this;
-    const tr = new Konva.Transformer();
+    let selectedRect: Konva.Rect;
+    const tr = new Konva.Transformer({
+      rotateEnabled: false,
+
+    });
     this.stage.on('click', function (e) {
       if (!this.clickStartShape) {
         return;
       }
-      if ((e.target._id == this.clickStartShape._id)
+      if ((e.target._id === this.clickStartShape._id)
         && (e.target.attrs.id !== 'imageNode')) {
         component.rectSelected = true;
         component.addDeleteListener(e.target);
         component.layer.add(tr);
         tr.attachTo(e.target);
         component.transformers.push(tr);
+        console.log("isTransforming()", e.target)
         component.layer.draw();
       } else {
         component.rectSelected = false;
@@ -380,6 +397,9 @@ this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;
         component.layer.draw();
       }
     });
+
+
+
   }
   addDeleteListener(shape: import('konva/types/Stage').Stage | import('konva/types/Shape').Shape<import('konva/types/Shape').ShapeConfig>) {
     const component = this;
@@ -402,16 +422,25 @@ this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;
     // localStorage.clear();
   }
 
-  loadImage(src, currentScale, selectedCordinatesForPageObj) {
+  loadImage(src, currentScale) {
     const imageObj = new Image();
     imageObj.src = src;
     imageObj.onload = (() => {
       this.imageHeight = imageObj.naturalHeight;
       this.imageWidth = imageObj.naturalWidth;
-
+      console.log(currentScale);
       const w = imageObj.naturalWidth * currentScale;
       const h = imageObj.naturalHeight * currentScale;
-      this.stage.setSize({ width: w * currentScale, height: h * currentScale }); 
+      this.stage.setSize({ width: w * currentScale, height: h * currentScale });
+      // const targetW = this.stage.width();// - (2 * padding);
+      // const targetH = this.stage.height();// - (2 * padding);
+
+      // // compute the ratios of image dimensions to aperture dimensions
+      // const widthFit = targetW / w;
+      // const heightFit = targetH / h;
+
+      // // compute a scale for best fit and apply it
+      // let scale = (widthFit > heightFit) ? heightFit : widthFit;
       const img = new Konva.Image({
         image: imageObj,
         x: this.stage.width() / 2,
@@ -423,9 +452,6 @@ this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;
       });
       this.layer.add(img);
       this.layer.batchDraw();
-      if(selectedCordinatesForPageObj){
-        this.showSelectionForLabel(selectedCordinatesForPageObj);
-      }
     });
 
   }
@@ -498,14 +524,14 @@ this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;
         this.pageId++;
       }
       this.page_num++;
-      this.loadImage(this.pdfData[this.pageId++], this.stage.scaleX(), undefined);
+      this.loadImage(this.pdfData[this.pageId++], this.stage.scaleX());
     } else if (this.pageId > 0) {
 
       if (this.pageId == this.pdfData.length) {
         this.pageId--;
       }
       this.pageId--;
-      this.loadImage(this.pdfData[this.pageId], this.stage.scaleX(), undefined);
+      this.loadImage(this.pdfData[this.pageId], this.stage.scaleX());
       this.page_num = this.pageId + 1;
     }
   }
@@ -522,10 +548,12 @@ this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;
   }
 
   zoomIn() {
+    console.log('zoomin', this.stage.scaleX());
     if (this.stage.scaleX() < 2) {
+      console.log(this.zoomFactor);
       const scale = this.stage.scaleX() + this.zoomFactor;
       this.stage.scale({ x: scale, y: scale });
-      this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX(), undefined);
+      this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX());
     }
   }
 
@@ -536,11 +564,11 @@ this.loadImage(this.pdfData[obj.page_number-1],this.stage.scaleX(), obj) ;
       this.stage.scale({ x: scale, y: scale });
       // this.layer.scale({x: scale,y:scale});
       // this.layer.draw();
-      this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX(), undefined);
+      this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX());
     }
   }
   reset() {
     this.stage.scale({ x: this.defaultScale, y: this.defaultScale });
-    this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX(), undefined);
+    this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX());
   }
 }

@@ -100,17 +100,25 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   closePopover(): void {
-    // this.maskEditorAppliedMessage = null;
-
-    // console.log('close' + this.popover.isOpen());
-    // if (this.popover.isOpen()) {
-    //   console.log('close kro popover');
-    //   this.popover.close();
-    // }
-    console.log(this.boxCoordinates, this.responseText);
+    console.log(this.boxCoordinates, this.responseText, this.pageId);
     this.aService.postCoordinates(this.boxCoordinates, this.responseText, this.pageId);
     this.popover.close();
     //this.popover.ngbPopover.elementRef.nativeElement.remove()
+  }
+
+  incorrectText() {
+    console.log('incorrectText');
+    this.clearRectangles();
+    this.popover.close();
+  }
+
+  clearRectangles() {
+    const rNodes = this.layer.find('Rect');
+    rNodes.toArray().forEach(node => {
+      console.log('inside', node);
+      node.destroy();
+    });
+    this.layer.batchDraw();
   }
 
   openPopover(): void {
@@ -131,7 +139,9 @@ export class KonvaShapeComponent implements OnInit {
       //
       for (var i = 1; i <= pdf.numPages; i++) {
         await pdf.getPage(i).then(async page => {
-          var scale = 1;
+          // var scale = 1;
+          // console.log(window.devicePixelRatio);
+          var scale = window.devicePixelRatio;
           var viewport = page.getViewport({ scale: scale });
           // console.log(viewport);
           // console.log(page);
@@ -141,19 +151,20 @@ export class KonvaShapeComponent implements OnInit {
           // var canvas = document.getElementById('the-canvas');
           var context = canvas.getContext('2d');
 
-          canvas.height = page.view[3];//this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
-          canvas.width = page.view[2];//this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
+          console.log(page.view);
+          canvas.height = page.view[3] * scale;//this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
+          canvas.width = page.view[2] * scale;//this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
           // this.stage.width = page.view[2];
           // this.stage.height = page.view[3];
-          this.stage.setSize({ width: page.view[2], height: page.view[3] });
+          this.stage.setSize({ width: page.view[2] * scale, height: page.view[3] * scale });
           // Render PDF page into canvas context
           //
-          var task = page.render({ canvasContext: context, viewport: viewport })
+          var task = page.render({ canvasContext: context, viewport: viewport });
           var data;
           await task.promise.then(async () => {
-            data = await canvas.toDataURL('image/jpeg');
+            data = await canvas.toDataURL('image/png', 1);
             this.pdfData.push(data);
-            if (i == 1) {
+            if (i === 1) {
               this.pageId++;
               this.loadImage(data, this.stage.scaleX());
               // console.log("new data: "+ data);
@@ -161,7 +172,7 @@ export class KonvaShapeComponent implements OnInit {
           });
         });
       }
-    }, function (error) {
+    }, (error) => {
       console.log(error);
     });
     // console.log(this.pdfData);
@@ -188,12 +199,7 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   addRectangleFromTemplate(obj) {
-    console.log(obj);
-    const rNodes = this.layer.find('Rect');
-    // this.layer.clear(rNodes);
-    rNodes.toArray().forEach(node => {
-      node.destroy();
-    });
+    this.clearRectangles();
 
     const pos = {
       x: obj.coordinates.pos.x * this.imageWidth,
@@ -213,11 +219,6 @@ export class KonvaShapeComponent implements OnInit {
       console.log('transform ended');
     });
   }
-
-  // rectTransforming() {
-
-  // }
-
 
   addLineListeners() {
     const component = this;
@@ -252,6 +253,7 @@ export class KonvaShapeComponent implements OnInit {
       if (!this.allowPaiting) {
         return;
       }
+      this.allowPaiting = false;
       const pos = component.stage.getPointerPosition();
       this.relativeScalePostion(pos);
       component.layer.batchDraw();
@@ -321,6 +323,7 @@ export class KonvaShapeComponent implements OnInit {
         this.boxCoordinates = coordinates;
       }, err => {
         console.log(err);
+        this.allowPaiting = true;
       });
       component.config.container = 'konvaDivId';
       // this.popoverNow = true;
@@ -539,7 +542,9 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   zoomIn() {
+    console.log('zoomin', this.stage.scaleX());
     if (this.stage.scaleX() < 2) {
+      console.log(this.zoomFactor);
       const scale = this.stage.scaleX() + this.zoomFactor;
       this.stage.scale({ x: scale, y: scale });
       this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX());

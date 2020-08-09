@@ -141,22 +141,21 @@ export class KonvaShapeComponent implements OnInit {
       for (var i = 1; i <= pdf.numPages; i++) {
         await pdf.getPage(i).then(async page => {
           // var scale = 1;
-          // console.log(window.devicePixelRatio);
+          console.log('DevicePixelRatio', window.devicePixelRatio);
+
           var scale = window.devicePixelRatio;
           var viewport = page.getViewport({ scale: scale });
-          // console.log(viewport);
-          // console.log(page);
-          //
           // Prepare canvas using PDF page dimensions
           const canvas = document.createElement('canvas');
           // var canvas = document.getElementById('the-canvas');
           var context = canvas.getContext('2d');
 
-          console.log(page.view);
+          // console.log(page.view);
           canvas.height = page.view[3] * scale;//this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
           canvas.width = page.view[2] * scale;//this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
           // this.stage.width = page.view[2];
           // this.stage.height = page.view[3];
+
           this.stage.setSize({ width: page.view[2] * scale, height: page.view[3] * scale });
           // Render PDF page into canvas context
           //
@@ -167,7 +166,13 @@ export class KonvaShapeComponent implements OnInit {
             this.pdfData.push(data);
             if (i === 1) {
               this.pageId++;
-              this.loadImage(data, this.stage.scaleX());
+              console.log(this.stage.scaleX());
+              if (window.devicePixelRatio > 1.5) {
+                const zoomOut = this.stage.scaleX() - 0.5;
+                this.loadImage(data, zoomOut);
+              } else {
+                this.loadImage(data, this.stage.scaleX());
+              }
               // console.log("new data: "+ data);
             }
           });
@@ -423,7 +428,7 @@ export class KonvaShapeComponent implements OnInit {
     imageObj.onload = (() => {
       this.imageHeight = imageObj.naturalHeight;
       this.imageWidth = imageObj.naturalWidth;
-
+      console.log(currentScale);
       const w = imageObj.naturalWidth * currentScale;
       const h = imageObj.naturalHeight * currentScale;
       this.stage.setSize({ width: w * currentScale, height: h * currentScale });

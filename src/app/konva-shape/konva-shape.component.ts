@@ -102,6 +102,7 @@ export class KonvaShapeComponent implements OnInit {
   closePopover(): void {
     console.log(this.boxCoordinates, this.responseText, this.pageId);
     this.aService.postCoordinates(this.boxCoordinates, this.responseText, this.pageId);
+    this.clearRectangles();
     this.popover.close();
     //this.popover.ngbPopover.elementRef.nativeElement.remove()
   }

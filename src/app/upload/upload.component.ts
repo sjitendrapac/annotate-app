@@ -24,29 +24,16 @@ export class UploadComponent implements OnInit {
   dataSource = new MatTableDataSource<any>();
 
   templateArray = [];
-
-  templateObject = {
-    'name': '',
-    'file_path': null,
-    'is_image': false,
-    'is_active': false,
-    'document_type': null,
-    'created_by': null,
-    'updated_by': null
-  };
-
-  documentObject = {
-    'file_name': '',
-    'file_path': null,
-    'status': null,
-    'is_active': false,
-    'batch': null,
-    'template': null
-  };
+  documentTypes;
 
   ngOnInit(): void {
     this.aService.getTemplates().subscribe((res) => {
       this.dataSource.data = res;
+    });
+
+    this.aService.getDocumentTypes().subscribe((res) => {
+      console.log(res);
+      this.documentTypes = res;
     });
   }
 
@@ -60,8 +47,8 @@ export class UploadComponent implements OnInit {
       });
       reader.addEventListener('loadend', () => {
         this.imageLoaded = true;
+        console.log(this.documentTypes);
         const name = e.target.files[0].name.split('.');
-        console.log(name);
         const obj = {
           name: name[0],
           document_type: 1,
@@ -73,6 +60,10 @@ export class UploadComponent implements OnInit {
         this.aService.addTemplate(obj).subscribe((res) => {
           console.log(res);
           this.router.navigate(['review'], { queryParams: { template: res.id } });
+        }, err => {
+          alert(JSON.stringify(err.error));
+          this.showUpload = false;
+          // console.log(err.error.name);
         });
         // console.log(this.imageSrc);
         // localStorage.setItem('file', this.imageSrc);

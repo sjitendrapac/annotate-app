@@ -169,6 +169,11 @@ export class AnnotationdataService {
     const POST_URL: string = environment.API_BASE_URL + 'data-types/';
     return this.http.get<any>(POST_URL, { headers: params });
   }
+  getDocumentTypes(): Observable<any> {
+    const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
+    const POST_URL: string = environment.API_BASE_URL + 'document-types/';
+    return this.http.get<any>(POST_URL, { headers: params });
+  }
 
   addDocument(obj): Observable<any> {
     const stringObj = JSON.stringify(obj);
@@ -178,16 +183,15 @@ export class AnnotationdataService {
     return this.http.post<any>(POST_URL, stringObj, { headers: params });
   }
 
-  extractText(obj, page_num): Observable<any> {
+  extractText(obj, templateId, page_num): Observable<any> {
     // const stringObj = JSON.stringify(obj);
     const object = {
       page_num: page_num,
       coordinates: obj
     };
-    const id = 2;
     console.log(object.page_num + "" + object.coordinates + "stringjson")
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
-    const POST_URL: string = environment.API_BASE_URL + 'templates/' + id + '/extract_text/';
+    const POST_URL: string = environment.API_BASE_URL + 'templates/' + templateId + '/extract_text/';
     return this.http.post<any>(POST_URL, object, { headers: params });
   }
 }

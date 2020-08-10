@@ -175,21 +175,24 @@ export class KonvaShapeComponent implements OnInit {
               this.pageId++;
               console.log('scale: ', window.devicePixelRatio);
               console.log('scalex', this.stage.scaleX());
-              if (window.devicePixelRatio > 1 && window.devicePixelRatio <= 1.6) {
-                this.defaultScale = 1.00;
-                this.loadImage(data, this.defaultScale, undefined);
-              } else if (window.devicePixelRatio > 1.6 && window.devicePixelRatio <= 1.75) {
-                this.defaultScale = 0.50;
-                this.loadImage(data, this.defaultScale, undefined);
-              } else if (window.devicePixelRatio > 1.75 && window.devicePixelRatio <= 2) {
-                this.defaultScale = 0.25;
-                this.loadImage(data, this.defaultScale, undefined);
-              } else if (window.devicePixelRatio > 2 && window.devicePixelRatio <= 3) {
-                this.defaultScale = 0.15;
-                this.loadImage(data, this.defaultScale, undefined);
-              } else {
-                this.loadImage(data, this.defaultScale, undefined);
-              }
+              this.defaultScale = 1 / window.devicePixelRatio;
+              this.stage.scale({ x: this.defaultScale, y: this.defaultScale });
+              this.loadImage(data, this.defaultScale, undefined);
+              // if (window.devicePixelRatio > 1 && window.devicePixelRatio <= 1.6) {
+              //   this.defaultScale = 1.00;
+              //   this.loadImage(data, this.defaultScale, undefined);
+              // } else if (window.devicePixelRatio > 1.6 && window.devicePixelRatio <= 1.75) {
+              //   this.defaultScale = 0.75;
+              //   this.loadImage(data, this.defaultScale, undefined);
+              // } else if (window.devicePixelRatio > 1.75 && window.devicePixelRatio <= 2) {
+              //   this.defaultScale = 0.50;
+              //   this.loadImage(data, this.defaultScale, undefined);
+              // } else if (window.devicePixelRatio > 2 && window.devicePixelRatio <= 3) {
+              //   this.defaultScale = 0.25;
+              //   this.loadImage(data, this.defaultScale, undefined);
+              // } else {
+              //   this.loadImage(data, this.defaultScale, undefined);
+              // }
             }
           });
         });
@@ -467,7 +470,7 @@ export class KonvaShapeComponent implements OnInit {
       console.log('w & h: ', w, h);
       console.log('stage Size before', this.stage.getSize());
 
-      this.stage.scale({ x: currentScale, y: currentScale });
+
       this.stage.setSize({ width: w, height: h });
       console.log('stage Size', this.stage.getSize());
       // const targetW = this.stage.width();// - (2 * padding);
@@ -479,6 +482,10 @@ export class KonvaShapeComponent implements OnInit {
 
       // // compute a scale for best fit and apply it
       // let scale = (widthFit > heightFit) ? heightFit : widthFit;
+      const imageNodes = this.layer.find('Image');
+      console.log(imageNodes);
+      imageNodes.toArray().forEach((i) => i.destroy());
+      console.log('after:', imageNodes);
       const img = new Konva.Image({
         image: imageObj,
         x: this.stage.width() / 2,
@@ -489,7 +496,8 @@ export class KonvaShapeComponent implements OnInit {
         id: 'imageNode',
       });
       this.layer.add(img);
-      this.layer.batchDraw();
+      this.layer.clearBeforeDraw();
+      this.layer.draw();
       if (selectedCordinatesForPageObj) {
         this.showSelectionForLabel(selectedCordinatesForPageObj);
       }
@@ -598,23 +606,23 @@ export class KonvaShapeComponent implements OnInit {
     if (this.stage.scaleX() < 2) {
       console.log(this.zoomFactor);
       const scale = this.stage.scaleX() + this.zoomFactor;
-      // this.stage.scale({ x: scale, y: scale });
+      this.stage.scale({ x: scale, y: scale });
       this.loadImage(this.pdfData[this.pageId - 1], scale, undefined);
     }
   }
 
 
   zoomOut() {
-    if (this.stage.scaleX() > 1) {
+    if (this.stage.scaleX() > this.defaultScale) {
       const scale = this.stage.scaleX() - this.zoomFactor;
-      // this.stage.scale({ x: scale, y: scale });
+      this.stage.scale({ x: scale, y: scale });
       // this.layer.scale({x: scale,y:scale});
       // this.layer.draw();
-      this.loadImage(this.pdfData[this.pageId - 1], scale, undefined);
+      this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX(), undefined);
     }
   }
   reset() {
-    // this.stage.scale({ x: this.defaultScale, y: this.defaultScale });
-    this.loadImage(this.pdfData[this.pageId - 1], this.defaultScale, undefined);
+    this.stage.scale({ x: this.defaultScale, y: this.defaultScale });
+    this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX(), undefined);
   }
 }

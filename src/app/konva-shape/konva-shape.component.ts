@@ -96,9 +96,9 @@ export class KonvaShapeComponent implements OnInit {
     });
   }
 
-  ngDoCheck() {
-    this.allowPaiting = this.aService.isPaintingEnabled();
-  }
+  // ngDoCheck() {
+  //   this.allowPaiting = this.aService.isPaintingEnabled();
+  // }
 
   closePopover(): void {
     console.log(this.boxCoordinates, this.responseText, this.pageId);
@@ -106,21 +106,28 @@ export class KonvaShapeComponent implements OnInit {
     this.aService.callAnnotateComponent(this.responseText);
     this.clearRectangles();
     this.popover.close();
+    this.responseText = '';
     //this.popover.ngbPopover.elementRef.nativeElement.remove()
   }
 
   incorrectText() {
     console.log('incorrectText');
+    this.allowPaiting = this.aService.isPaintingEnabled();
     this.clearRectangles();
     this.popover.close();
   }
 
   clearRectangles() {
     const rNodes = this.layer.find('Rect');
+    const tr = this.layer.find('Transformer');
     rNodes.toArray().forEach(node => {
       console.log('inside', node);
       node.destroy();
     });
+    console.log(tr);
+    // tr.toArray().forEach(t => {
+    //   t.detach();
+    // });
     this.layer.batchDraw();
   }
 
@@ -146,6 +153,7 @@ export class KonvaShapeComponent implements OnInit {
           console.log('DevicePixelRatio', window.devicePixelRatio);
 
           var scale = window.devicePixelRatio;
+          // var scale = 2;
           var viewport = page.getViewport({ scale: scale });
           // Prepare canvas using PDF page dimensions
           const canvas = document.createElement('canvas');
@@ -157,6 +165,8 @@ export class KonvaShapeComponent implements OnInit {
           canvas.width = page.view[2] * scale;//this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
           // this.stage.width = page.view[2];
           // this.stage.height = page.view[3];
+          // context.scale(scale, scale);
+          // this.stage.scale({ x: scale, y: scale });
 
           this.stage.setSize({ width: page.view[2] * scale, height: page.view[3] * scale });
           // Render PDF page into canvas context
@@ -168,11 +178,11 @@ export class KonvaShapeComponent implements OnInit {
             this.pdfData.push(data);
             if (i === 1) {
               this.pageId++;
-              console.log(this.stage.scaleX());
-              if (window.devicePixelRatio > 1.5) {
-                console.log(scale);
-                const zoomOut = this.stage.scaleX() - 0.5;
-                this.loadImage(data, zoomOut, undefined);
+              console.log('scalex', this.stage.scaleX());
+              if (window.devicePixelRatio > 1.25) {
+                console.log('scale: ', scale);
+                this.defaultScale = this.stage.scaleX() + (1 - window.devicePixelRatio);
+                this.loadImage(data, this.stage.scaleX() + (1 - window.devicePixelRatio), undefined);
               } else {
                 this.loadImage(data, this.stage.scaleX(), undefined);
               }
@@ -351,6 +361,7 @@ export class KonvaShapeComponent implements OnInit {
       component.config.container = 'konvaDivId';
       // this.popoverNow = true;
       component.openPopover();
+      this.allowPaiting = false;
       // component.openModal(crop);
 
     });
@@ -406,7 +417,8 @@ export class KonvaShapeComponent implements OnInit {
         component.layer.add(tr);
         tr.attachTo(e.target);
         component.transformers.push(tr);
-        console.log("isTransforming()", e.target)
+        component.openPopover();
+        // TODO: Call extracttext when transformer select.
         component.layer.draw();
       } else {
         component.rectSelected = false;

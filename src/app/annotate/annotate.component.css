@@ -27,8 +27,9 @@ mat-expansion-panel {
 }
 
 .example-form:hover {
-  border: 2px solid #349388;
+  border: 1px solid #349388;
   border-radius: 4px;
+  /* box-shadow: #349388; */
 }
 
 .active {
@@ -46,7 +47,7 @@ mat-expansion-panel {
   caret-color: #349388;
 }
 .form-field {
-  width: 125px;
+  /* width: 125px; */
 }
 
 .mat-input-element {

@@ -20,7 +20,7 @@ export class AnnotateComponent implements OnInit {
   // tslint:disable-next-line: no-input-rename
   @Input('templateId') templateId;
   dataSource = new MatTableDataSource<any>();
-  fieldSubmitted: true;
+  fieldSubmitted = true;
 
   displayedColumns = ['label', 'type', 'text'];
 
@@ -90,26 +90,19 @@ export class AnnotateComponent implements OnInit {
   }
 
   addTemplate() {
-    this.templateArray().push(this.newTemplate());
-    this.selectedFormIndex = this.templateArray().length - 1;
+    console.log(this.fieldSubmitted);
+    if (this.fieldSubmitted) {
+      this.templateArray().push(this.newTemplate());
+      this.selectedFormIndex = this.templateArray().length - 1;
+      this.fieldSubmitted = false;
+    }
   }
 
   removeTemplate(i: number) {
     this.templateArray().removeAt(i);
+    this.fieldSubmitted = true;
   }
-  // checkSubmission(f) {
-  //   // if (t.value.label ==)
-  //   console.log('checkSubmission');
-  //   this.savedTemplateFields.find((t) => {
-  //     if (t.name === f.value.label) {
-  //       console.log('true', t.name, f.value.label);
-  //       return true;
-  //     } else {
-  //       console.log('false', t.name, f.value.label);
-  //       return false;
-  //     }
-  //   });
-  // }
+
   patchForms(obj) {
     this.savedTemplateFields = obj;
     this.aService.getDataTypes().subscribe((res) => {
@@ -159,6 +152,8 @@ export class AnnotateComponent implements OnInit {
     this.aService.postTemplateFieldData(fieldData).subscribe(res => {
       console.log(res);
       this.fieldSubmitted = true;
+      this.addTemplate();
+      this.aService.enableCanvas();
     }, error => console.log(error));
     //   // API Call to confirm field data.
   }

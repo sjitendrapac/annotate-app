@@ -30,6 +30,7 @@ import { UploadComponent } from './upload/upload.component';
 import { ReviewComponent } from './review/review.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatTooltipModule } from '@angular/material/tooltip';
 // import { PdfJsViewerModule } from 'ng2-pdfjs-viewer';
 
 @NgModule({
@@ -66,6 +67,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     MatDialogModule,
     MatListModule,
     NgbModule,
+    MatTooltipModule,
   ],
   providers: [RectangleService],
   bootstrap: [AppComponent],

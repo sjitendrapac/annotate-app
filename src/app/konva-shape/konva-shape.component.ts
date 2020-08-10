@@ -102,6 +102,7 @@ export class KonvaShapeComponent implements OnInit {
   closePopover(): void {
     console.log(this.boxCoordinates, this.responseText, this.pageId);
     this.aService.postCoordinates(this.boxCoordinates, this.responseText, this.pageId);
+    this.aService.callAnnotateComponent(this.responseText);
     this.clearRectangles();
     this.popover.close();
     //this.popover.ngbPopover.elementRef.nativeElement.remove()
@@ -168,6 +169,7 @@ export class KonvaShapeComponent implements OnInit {
               this.pageId++;
               console.log(this.stage.scaleX());
               if (window.devicePixelRatio > 1.5) {
+                console.log(scale)
                 const zoomOut = this.stage.scaleX() - 0.5;
                 this.loadImage(data, zoomOut);
               } else {

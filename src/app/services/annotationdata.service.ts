@@ -35,7 +35,7 @@ export class AnnotationdataService {
       bounding_box_w_value: null,
       bounding_box_h_value: null,
       is_bg_colored: false,
-      is_active: false,
+      is_active: true,
       template: null,
       data_type: null,
       parent_field: null,
@@ -47,11 +47,14 @@ export class AnnotationdataService {
 
   // private componentMethodCallSource = new Subject<any>();
   private callKonvaSubject = new Subject<any>();
-
-
   // Observable string streams
   // componentMethodCalled$ = this.componentMethodCallSource.asObservable();
   konvaCalled$ = this.callKonvaSubject.asObservable();
+
+  private callAnnotateSubject = new Subject<any>();
+  // Observable string streams
+  // componentMethodCalled$ = this.componentMethodCallSource.asObservable();
+  AnnotateCalled$ = this.callAnnotateSubject.asObservable();
 
 
   constructor(private http: HttpClient) { }
@@ -66,6 +69,10 @@ export class AnnotationdataService {
       page_number
     }
     this.callKonvaSubject.next(obj);
+  }
+  callAnnotateComponent(responseText) {
+    // responseText
+    this.callAnnotateSubject.next(responseText);
   }
 
   isPaintingEnabled() {
@@ -189,6 +196,7 @@ export class AnnotationdataService {
       page_num: page_num,
       coordinates: obj
     };
+    console.log(object);
     console.log(object.page_num + "" + object.coordinates + "stringjson")
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
     const POST_URL: string = environment.API_BASE_URL + 'templates/' + templateId + '/extract_text/';

@@ -3,25 +3,30 @@
     <!-- <nb-container> -->
     <!-- </nb-container> -->
     <div *ngIf="pdfData.length">
-        <button mat-button style="color: #349388" (click)="loadNextPage(false)" *ngIf="page_num > 0">
+        <button mat-button style="color: #349388" matTooltip="Prev Page" (click)="loadNextPage(false)"
+            *ngIf="page_num > 0">
             <mat-icon>arrow_left</mat-icon>
         </button>
         <mat-card style="display: inline; ;background-color:rgba(90, 90, 90); color:white;">
             {{ page_num + "/" + pdfData.length}}</mat-card>
-        <button mat-button style="color: #349388" (click)="loadNextPage(true)" *ngIf="pageId < pdfData.length">
+        <button mat-button style="color: #349388" matTooltip="Next Page" (click)="loadNextPage(true)"
+            *ngIf="pageId < pdfData.length">
             <mat-icon>arrow_right</mat-icon>
         </button>
 
         <!-- </div> -->
         <!-- <div> -->
-        <button mat-button style="color: #349388" (click)="zoomIn()">
+        <button mat-button style="color: #349388" matTooltip="Zoom In" (click)="zoomIn()">
             <mat-icon>zoom_in</mat-icon>
         </button>
-        <button mat-button style="color: #349388" (click)="zoomOut()">
+        <button mat-button style="color: #349388" matTooltip="Zoom Out" (click)="zoomOut()">
             <mat-icon>zoom_out</mat-icon>
         </button>
-        <button mat-button style="color: #349388" (click)="reset()">
+        <button mat-button style="color: #349388" matTooltip="Reset Zoom" (click)="reset()">
             <mat-icon>restore</mat-icon>
+        </button>
+        <button mat-button style="color: #349388" matTooltip="Clear Rectangles" (click)="clearRectangles()">
+            <mat-icon>clear</mat-icon>
         </button>
     </div>
 

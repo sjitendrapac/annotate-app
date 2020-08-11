@@ -40,7 +40,8 @@ export class AnnotationdataService {
       data_type: null,
       parent_field: null,
       created_by: null,
-      updated_by: null
+      updated_by: null,
+      value: null
     };
 
   responseText: string;
@@ -130,6 +131,7 @@ export class AnnotationdataService {
     this.templateField.sequence_num = data.sequence_num;
     this.templateField.template = data.template;
     this.templateField.is_bg_colored = data.is_bg_colored;
+    this.templateField.value = data.value;
 
     this.allowPainting = false;
 

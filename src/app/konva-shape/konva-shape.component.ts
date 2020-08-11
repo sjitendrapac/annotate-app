@@ -179,7 +179,7 @@ export class KonvaShapeComponent implements OnInit {
               console.log('scalex', this.stage.scaleX());
               this.loadImage(data, this.stage.scaleX(), undefined);
               if (window.devicePixelRatio >= 1.25) {
-                this.defaultScale = (1 / window.devicePixelRatio) + ;
+                this.defaultScale = (1 / window.devicePixelRatio) + 0.20;
                 this.stage.setSize({ width: page.view[2] * this.defaultScale, height: page.view[3] * this.defaultScale });
                 this.reset();
               }

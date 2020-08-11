@@ -24,19 +24,26 @@
                                 <input class="input-class" matInput formControlName="text" placeholder="Text"
                                     color="primary">
                             </mat-form-field>
+			    <mat-form-field *ngIf="template.get('attachedLabel')['value'] != null && template.get('attachedLabel')['value'] !='' " class="form-field" appearance="fill">
+                            <input class="input-class" matInput formControlName="attachedLabel" placeholder="AttachedLabel"
+                                color="primary">
+                            </mat-form-field>
                             <mat-checkbox formControlName="checkbox" style="color: #349388;">
                                 Highlight Field
                             </mat-checkbox>
                             <button mat-icon-button style="color: #349388;" (click)="onTemplateSubmit(template, i)">
                                 <mat-icon>check_circle_outline</mat-icon>
                             </button>
-                            <!-- <button mat-icon-button style="color: #349388;" [disabled]="true"
-                                *ngIf="savedTemplateFields[i]">
-                                <mat-icon>check_circle_filled</mat-icon>
-                            </button> -->
+                            
                             <button mat-icon-button style="color: #349388;" (click)="removeTemplate(i)">
                                 <mat-icon>delete</mat-icon>
                             </button>
+                            <button mat-icon-button style="color: #349388;" (click)="addLabelToTempateClick(i)">
+                            	L
+                            </button>
+                            <!-- <button mat-icon-button style="color: #349388;" [disabled] *ngIf="template.label">
+                            <mat-icon>check_circle_filled</mat-icon>
+                        </button> -->
                         </form>
                     </div>
 

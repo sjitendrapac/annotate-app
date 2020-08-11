@@ -12,12 +12,11 @@ import { environment } from 'src/environments/environment';
 export class AnnotationdataService {
   // Observable string sources
   private missionAnnouncedSource = new Subject<string>();
-
+  public addLabelToTemplate:boolean;
   // Observable string streams
   missionAnnounced$ = this.missionAnnouncedSource.asObservable();
   data = [];
   allowPainting = false;
-
   templateField =
     {
       name: '',
@@ -41,7 +40,8 @@ export class AnnotationdataService {
       parent_field: null,
       created_by: null,
       updated_by: null,
-      value: null
+      value: null,
+      attachedLabel:''
     };
 
   responseText: string;
@@ -88,10 +88,12 @@ export class AnnotationdataService {
     }
   }
 
+
   enableCanvas() {
     this.allowPainting = true;
     this.callKonvaSubject.next(this.allowPainting);
   }
+  
   disableCanvas() {
     this.allowPainting = false;
   }
@@ -108,21 +110,24 @@ export class AnnotationdataService {
     console.log(text);
     this.responseText = text;
     this.templateField.page_number = pageId;
-    this.templateField.bounding_box_x_value = coordinates.x.toFixed(5);
-    this.templateField.bounding_box_y_value = coordinates.y.toFixed(5);
-    this.templateField.bounding_box_w_value = coordinates.w.toFixed(5);
-    this.templateField.bounding_box_h_value = coordinates.h.toFixed(5);
-
-    this.templateField.bounding_box_x_label = coordinates.x.toFixed(5);
-    this.templateField.bounding_box_y_label = coordinates.y.toFixed(5);
-    this.templateField.bounding_box_w_label = coordinates.w.toFixed(5);
-    this.templateField.bounding_box_h_label = coordinates.h.toFixed(5);
+   if(this.isAddLabelToTemplate()){
+      this.templateField.bounding_box_x_label = coordinates.x.toFixed(5);
+      this.templateField.bounding_box_y_label = coordinates.y.toFixed(5);
+      this.templateField.bounding_box_w_label = coordinates.w.toFixed(5);
+      this.templateField.bounding_box_h_label = coordinates.h.toFixed(5);
+    }else{
+      this.templateField.bounding_box_x_value = coordinates.x.toFixed(5);
+      this.templateField.bounding_box_y_value = coordinates.y.toFixed(5);
+      this.templateField.bounding_box_w_value = coordinates.w.toFixed(5);
+      this.templateField.bounding_box_h_value = coordinates.h.toFixed(5);
+    }
     // this.getTemplateFieldData()
   }
 
   postTemplateFieldData(data) {
     this.templateField.abbreviation = data.label;
     this.templateField.name = data.label;
+    this.templateField.attachedLabel = data.attachedLabel;
     this.templateField.label_name = data.label;
     this.templateField.data_type = data.type;
     this.templateField.created_by = 1;
@@ -213,5 +218,13 @@ export class AnnotationdataService {
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
     const POST_URL: string = environment.API_BASE_URL + 'templates/' + templateId + '/extract_text/';
     return this.http.post<any>(POST_URL, object, { headers: params });
+  }
+
+  public setAddLabelToTemplate(val:boolean){
+    this.addLabelToTemplate = val;
+  }
+
+  public isAddLabelToTemplate(){
+    return this.addLabelToTemplate;
   }
 }

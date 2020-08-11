@@ -40,6 +40,7 @@ export class ReviewComponent implements OnInit {
 
   addLabel() {
     this.aService.enableCanvas();
+    this.aService.setAddLabelToTemplate(false); 
     this.annotate.addTemplate();
     // this.disableUntilComplete = false;
   }

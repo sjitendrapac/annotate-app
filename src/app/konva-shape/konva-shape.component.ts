@@ -93,9 +93,12 @@ export class KonvaShapeComponent implements OnInit {
     this.config.triggers = 'manual';
     this.config.autoClose = false;
     this.aService.konvaCalled$.subscribe((res) => {
+      
+      this.clearRectangles();
       if (typeof (res) === 'boolean') {
         this.allowPaiting = res;
-      } else {
+      }
+        else {
         this.addRectangleFromTemplate(res);
       }
     });
@@ -112,6 +115,7 @@ export class KonvaShapeComponent implements OnInit {
     this.clearRectangles();
     this.popover.close();
     this.responseText = '';
+    this.allowPaiting = false;
     //this.popover.ngbPopover.elementRef.nativeElement.remove()
   }
 

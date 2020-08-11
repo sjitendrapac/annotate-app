@@ -27,14 +27,13 @@ export class AnnotateComponent implements OnInit {
 
   fieldSubmitted = true;
 
-  displayedColumns = ['label', 'type', 'text'];
+  displayedColumns = ['label', 'type', 'text','attachedLabel'];
 
   templateForm: FormGroup;
 
   savedTemplateFields;
   storedFieldNames = [];
   selectedFormIndex;
-
   rectReady = false;
 
   subscription: Subscription;
@@ -62,6 +61,7 @@ export class AnnotateComponent implements OnInit {
     this.aService.AnnotateCalled$.subscribe((res) => {
       this.patchTextField(res.responseText, res.isBgColored);
       this.isBgColored = res.isBgColored;
+      
       // this.selectedFormIndex
     });
 
@@ -87,7 +87,8 @@ export class AnnotateComponent implements OnInit {
       label: new FormControl(),
       text: new FormControl(),
       type: new FormControl(),
-      checkbox: new FormControl()
+      checkbox: new FormControl(),
+      attachedLabel: new FormControl()
     });
   }
 
@@ -122,7 +123,8 @@ export class AnnotateComponent implements OnInit {
             label: element.name,
             text: element.value,
             type,
-            checkbox: element.is_bg_colored
+            checkbox: element.is_bg_colored,
+            attachedLabel:''
           });
 
         this.templateArray().push(template);
@@ -136,11 +138,16 @@ export class AnnotateComponent implements OnInit {
   patchTextField(text, isBgColored) {
     const i = this.selectedFormIndex;
     console.log(i);
+    if(this.aService.isAddLabelToTemplate()){
+    this.templateArray().at(i).get('attachedLabel').patchValue(text);
+    this.aService.setAddLabelToTemplate(false);
+    }else{
     this.templateArray().at(i).get('text').patchValue(text);
     this.templateArray().at(i).get('checkbox').patchValue(isBgColored);
     console.log(this.templateArray().at(i).get('checkbox').value);
     // this.templateArray().at(i).get('checkbox').value = true;
   }
+}
   onTemplateSubmit(t, i) {
     let typeId;
     this.validTypes.forEach(type => {
@@ -153,6 +160,7 @@ export class AnnotateComponent implements OnInit {
       label: t.value.label,
       type: typeId,
       value: t.value.text,
+      attachedLabel:t.value.attachedLabel,
       sequence_num: i,
       template: this.templateId,
       is_bg_colored: this.isBgColored
@@ -189,6 +197,9 @@ export class AnnotateComponent implements OnInit {
   }
 
   onSelect(f, i) {
+    if(this.aService.isAddLabelToTemplate()){
+      return;
+    }
     this.selectedFormIndex = i;
     this.savedTemplateFields.find((t) => {
       if (t.name === f.value.label) {
@@ -206,4 +217,18 @@ export class AnnotateComponent implements OnInit {
       }
     });
   }
+
+
+  addLabelToTempateClick(index) {
+  // this.isLabelButtonShw = true;
+  this.selectedFormIndex = index;
+  this.aService.setAddLabelToTemplate(true);
+  this.aService.enableCanvas();
+    // this.templateFieldObj['fieldData']= this.responseText;
+    // this.responseText = '';    
+    // const tempNodes = this.layer.find('Rect');
+    // this.showLabelBtn=false;
+    // this.clearRectangles();    
+  }
+
 }

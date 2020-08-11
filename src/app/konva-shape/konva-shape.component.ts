@@ -657,7 +657,7 @@ export class KonvaShapeComponent implements OnInit {
     console.log('zoomout stage', this.stage.scaleX());
     console.log('zoomout default', this.defaultScale);
     console.log('zoomout level', this.zoomLevel);
-    if (this.stage.scaleX() > this.defaultScale && this.zoomLevel >= 0) {
+    if (this.stage.scaleX() > this.defaultScale + 0.001 && this.zoomLevel >= 0) {
       this.zoomLevel = this.zoomLevel - 1;
       const scale = this.stage.scaleX() - this.zoomFactor;
       this.stage.scale({ x: scale, y: scale });

@@ -31,6 +31,7 @@ import { ReviewComponent } from './review/review.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 // import { PdfJsViewerModule } from 'ng2-pdfjs-viewer';
 
 @NgModule({
@@ -49,6 +50,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     // PdfJsViewerModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    MatCheckboxModule,
     MatToolbarModule,
     MatGridListModule,
     MatTableModule,

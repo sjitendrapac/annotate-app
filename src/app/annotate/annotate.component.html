@@ -24,15 +24,20 @@
                                 <input class="input-class" matInput formControlName="text" placeholder="Text"
                                     color="primary">
                             </mat-form-field>
-                            <button mat-icon-button style="color: #349388;" (click)="onTemplateSubmit(template, i)">
+                            <button mat-icon-button style="color: #349388;" (click)="onTemplateSubmit(template, i)"
+                                *ngIf="!savedTemplateFields[i]">
                                 <mat-icon>check_circle_outline</mat-icon>
                             </button>
-                            <button mat-icon-button style="color: #349388;" (click)="removeTemplate(i)">
+                            <button mat-icon-button style="color: #349388;" (click)="removeTemplate(i)"
+                                *ngIf="!savedTemplateFields[i]">
                                 <mat-icon>delete</mat-icon>
                             </button>
-                            <!-- <button mat-icon-button style="color: #349388;" [disabled] *ngIf="template.label">
-                            <mat-icon>check_circle_filled</mat-icon>
-                        </button> -->
+                            <mat-checkbox style="color: #349388;" [checked]="isBgColored && i == selectedFormIndex"
+                                [disabled]="true" *ngIf="!savedTemplateFields[i]">Highlight Field
+                            </mat-checkbox>
+                            <button mat-icon-button style="color: #349388;" [disabled] *ngIf="savedTemplateFields[i]">
+                                <mat-icon>check_circle_filled</mat-icon>
+                            </button>
                         </form>
                     </div>
 

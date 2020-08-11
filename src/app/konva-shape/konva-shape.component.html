@@ -30,7 +30,7 @@
         </button>
     </div>
 
-    <div class="child" #popOver="ngbPopover" [ngbPopover]="popContent"></div>
+    <div class="child" #popOver="ngbPopover" triggers="manual" [autoClose]="false" [ngbPopover]="popContent"></div>
     <mat-card-content #konvaDivId id="konvaContainer"
         style="height:792px;min-width:612px; overflow-x: scroll;overflow-y: scroll"></mat-card-content>
 </mat-card>
@@ -47,6 +47,11 @@
             <button mat-icon-button (click)="incorrectText()">
                 <mat-icon>clear</mat-icon>
             </button>
+            <button mat-icon-button (click)="extractText()">
+                <mat-icon>refresh</mat-icon>
+            </button>
+            <mat-checkbox class="example-margin" [checked]="false" (change)="onCheckboChange()">Select Highlighted!
+            </mat-checkbox>
         </mat-card-content>
     </mat-card>
 </ng-template>

@@ -36,6 +36,7 @@ export class AnnotateComponent implements OnInit {
   mission = '<no mission announced>';
   data = [];
   responseText: string;
+  isBgColored: boolean;
 
   validTypes;
   // validTypes = [
@@ -57,11 +58,10 @@ export class AnnotateComponent implements OnInit {
 
 
   ngOnInit() {
-    // this.addTemplate();
-    // this.aService.enableCanvas();
-    // this.patchTextField();
     this.aService.AnnotateCalled$.subscribe((res) => {
-      this.patchTextField(res);
+      this.patchTextField(res.responseText);
+      this.isBgColored = res.isBgColored;
+      // this.selectedFormIndex
     });
 
   }
@@ -154,6 +154,13 @@ export class AnnotateComponent implements OnInit {
       this.fieldSubmitted = true;
       this.addTemplate();
       this.aService.enableCanvas();
+      this.isBgColored = false;
+      const obj = { id: this.templateId, pageNo: '' };
+      this.aService.viewTemplate(obj).subscribe((res) => {
+        // console.log(res);
+        this.patchForms(res);
+      }, (err => console.log(err)
+      ));
     }, error => console.log(error));
     //   // API Call to confirm field data.
   }

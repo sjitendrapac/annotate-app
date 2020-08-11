@@ -62,6 +62,7 @@ export class KonvaShapeComponent implements OnInit {
   pageId = 0;
   pdfData: string[] = [];
   zoomLevel = 0;
+  isBgColored = false;
 
   constructor(
     private RectService: RectangleService,
@@ -90,7 +91,7 @@ export class KonvaShapeComponent implements OnInit {
     // console.log(localStorage.getItem('file'));
 
     this.config.triggers = 'manual';
-    this.config.autoClose = 'outside';
+    this.config.autoClose = false;
     this.aService.konvaCalled$.subscribe((res) => {
       if (typeof (res) === 'boolean') {
         this.allowPaiting = res;
@@ -107,7 +108,7 @@ export class KonvaShapeComponent implements OnInit {
   closePopover(): void {
     // console.log("data passed for template Field: ", this.boxCoordinates, this.responseText, this.pageId);
     this.aService.postCoordinates(this.boxCoordinates, this.responseText, this.pageId);
-    this.aService.callAnnotateComponent(this.responseText);
+    this.aService.callAnnotateComponent(this.responseText, this.isBgColored);
     this.clearRectangles();
     this.popover.close();
     this.responseText = '';
@@ -120,6 +121,22 @@ export class KonvaShapeComponent implements OnInit {
     this.clearRectangles();
     this.popover.close();
     this.responseText = '';
+  }
+
+  onCheckboChange() {
+    this.isBgColored = !this.isBgColored;
+  }
+  extractText() {
+    // console.log('extractText');
+    // console.log(this.isBgColored);
+    this.aService.extractText(this.boxCoordinates, this.templateId, this.pageId, this.isBgColored).subscribe((res) => {
+      console.log(res);
+      this.responseText = res.text;
+      this.openPopover();
+    }, err => {
+      // console.log(err);
+      this.allowPaiting = true;
+    });
   }
 
   clearRectangles() {
@@ -360,7 +377,7 @@ export class KonvaShapeComponent implements OnInit {
         h: crop.height / this.stage.scaleY() / imHeight
       };
       // console.log(coordinates);
-      this.aService.extractText(coordinates, this.templateId, this.pageId).subscribe((res) => {
+      this.aService.extractText(coordinates, this.templateId, this.pageId, undefined).subscribe((res) => {
         // console.log(res);
         this.responseText = res.text;
         this.boxCoordinates = coordinates;

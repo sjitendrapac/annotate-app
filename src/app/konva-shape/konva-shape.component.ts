@@ -129,6 +129,7 @@ export class KonvaShapeComponent implements OnInit {
     // tr.toArray().forEach(t => {
     //   t.detach();
     // });
+    this.allowPaiting = this.aService.isPaintingEnabled();
     this.layer.batchDraw();
   }
 
@@ -163,8 +164,8 @@ export class KonvaShapeComponent implements OnInit {
 
           canvas.height = page.view[3] * scale;//this.konvaContainId.nativeElement.offsetHeight;//this.parentEl.children[0].children[i].clientHeight;//viewport.height;
           canvas.width = page.view[2] * scale;//this.konvaContainId.nativeElement.offsetWidth;//viewport.width;
-          this.stage.setSize({ width: page.view[2] * scale, height: page.view[3] * scale });
-          console.log('stage Size After', this.stage.getSize());
+          // this.stage.setSize({ width: page.view[2] * scale, height: page.view[3] * scale });
+          // console.log('stage Size After', this.stage.getSize());
           // Render PDF page into canvas context
           //
           var task = page.render({ canvasContext: context, viewport: viewport });
@@ -178,7 +179,8 @@ export class KonvaShapeComponent implements OnInit {
               console.log('scalex', this.stage.scaleX());
               this.loadImage(data, this.stage.scaleX(), undefined);
               if (window.devicePixelRatio >= 1.25) {
-                this.defaultScale = (1 / window.devicePixelRatio) + 0.20;
+                this.defaultScale = (1 / window.devicePixelRatio) + 0.2;
+                this.stage.setSize({ width: page.view[2] * this.defaultScale, height: page.view[3] * this.defaultScale });
                 this.reset();
               }
             }
@@ -294,7 +296,7 @@ export class KonvaShapeComponent implements OnInit {
       component.shapes[currShapeIndex] = rect;
       component.layer.batchDraw();
       isPaint = false;
-      const mission = 'Rectangle Created'
+      const mission = 'Rectangle Created';
       component.aService.announceMission(mission);
       component.startPos = {
         x: 0,
@@ -447,6 +449,7 @@ export class KonvaShapeComponent implements OnInit {
 
   loadImage(src, currentScale, selectedCordinatesForPageObj) {
     const imageObj = new Image();
+    console.log(src);
     imageObj.src = src;
     imageObj.onload = (() => {
       this.imageHeight = imageObj.naturalHeight;
@@ -457,9 +460,11 @@ export class KonvaShapeComponent implements OnInit {
       console.log('imw & imh: ', this.imageWidth, this.imageHeight);
       console.log('w & h: ', w, h);
       console.log('stage Size before', this.stage.getSize());
+      console.log('currentScale in LoadImage', currentScale);
 
 
-      this.stage.setSize({ width: w, height: h });
+      console.log('stage Size bLI', this.stage.getSize());
+      this.stage.setSize({ width: w * currentScale, height: h * currentScale });
       console.log('stage Size', this.stage.getSize());
       // const targetW = this.stage.width();// - (2 * padding);
       // const targetH = this.stage.height();// - (2 * padding);
@@ -595,6 +600,7 @@ export class KonvaShapeComponent implements OnInit {
       console.log(this.zoomFactor);
       const scale = this.stage.scaleX() + this.zoomFactor;
       this.stage.scale({ x: scale, y: scale });
+      console.log('zoomin', this.pageId);
       this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX(), undefined);
     }
   }
@@ -607,11 +613,14 @@ export class KonvaShapeComponent implements OnInit {
       this.stage.scale({ x: scale, y: scale });
       // this.layer.scale({x: scale,y:scale});
       // this.layer.draw();
+      console.log('zoomout', this.pageId);
       this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX(), undefined);
     }
   }
   reset() {
     this.stage.scale({ x: this.defaultScale, y: this.defaultScale });
+    console.log('zoomreset', this.pageId);
+    console.log('zoomreset', this.stage.scaleX());
     this.loadImage(this.pdfData[this.pageId - 1], this.stage.scaleX(), undefined);
   }
 }

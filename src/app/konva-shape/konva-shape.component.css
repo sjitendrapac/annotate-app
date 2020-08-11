@@ -30,3 +30,8 @@ mat-card-subtitle {
   left: 50%;
   margin: -25px 0 0 -25px; /* apply negative top and left margins to truly center the element */
 }
+
+.example-margin {
+  margin: 0 12px;
+  color: #ffffff;
+}

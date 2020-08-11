@@ -40,7 +40,8 @@ export class AnnotationdataService {
       data_type: null,
       parent_field: null,
       created_by: null,
-      updated_by: null
+      updated_by: null,
+      value: null
     };
 
   responseText: string;
@@ -70,9 +71,13 @@ export class AnnotationdataService {
     }
     this.callKonvaSubject.next(obj);
   }
-  callAnnotateComponent(responseText) {
+  callAnnotateComponent(responseText, isBgColored) {
     // responseText
-    this.callAnnotateSubject.next(responseText);
+    const obj = {
+      responseText,
+      isBgColored
+    }
+    this.callAnnotateSubject.next(obj);
   }
 
   isPaintingEnabled() {
@@ -125,6 +130,8 @@ export class AnnotationdataService {
     this.templateField.level = 1;
     this.templateField.sequence_num = data.sequence_num;
     this.templateField.template = data.template;
+    this.templateField.is_bg_colored = data.is_bg_colored;
+    this.templateField.value = data.value;
 
     this.allowPainting = false;
 
@@ -190,14 +197,19 @@ export class AnnotationdataService {
     return this.http.post<any>(POST_URL, stringObj, { headers: params });
   }
 
-  extractText(obj, templateId, page_num): Observable<any> {
+  extractText(obj, templateId, page_num, is_bg_colored): Observable<any> {
     // const stringObj = JSON.stringify(obj);
+
     const object = {
       page_num: page_num,
-      coordinates: obj
+      coordinates: obj,
+      is_bg_colored: false,
     };
+    if (is_bg_colored) {
+      object.is_bg_colored = is_bg_colored;
+    }
     console.log(object);
-    console.log(object.page_num + "" + object.coordinates + "stringjson")
+    // console.log(object.page_num + "" + object.coordinates + "stringjson")
     const params = new HttpHeaders({ accept: 'application/json', Authorization: 'Basic YWRtaW46YWRtaW4=' });
     const POST_URL: string = environment.API_BASE_URL + 'templates/' + templateId + '/extract_text/';
     return this.http.post<any>(POST_URL, object, { headers: params });

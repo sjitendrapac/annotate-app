@@ -54,7 +54,8 @@ export class UploadComponent implements OnInit {
           document_type: 1,
           created_by: 1,
           updated_by: 1,
-          file: this.imageSrc
+          file: this.imageSrc,
+          is_active: true,
         };
 
         this.aService.addTemplate(obj).subscribe((res) => {

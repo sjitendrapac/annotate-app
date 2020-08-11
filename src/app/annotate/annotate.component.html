@@ -24,23 +24,30 @@
                                 <input class="input-class" matInput formControlName="text" placeholder="Text"
                                     color="primary">
                             </mat-form-field>
+                            <mat-checkbox formControlName="checkbox" style="color: #349388;">
+                                Highlight Field
+                            </mat-checkbox>
                             <button mat-icon-button style="color: #349388;" (click)="onTemplateSubmit(template, i)">
                                 <mat-icon>check_circle_outline</mat-icon>
                             </button>
+                            <!-- <button mat-icon-button style="color: #349388;" [disabled]="true"
+                                *ngIf="savedTemplateFields[i]">
+                                <mat-icon>check_circle_filled</mat-icon>
+                            </button> -->
                             <button mat-icon-button style="color: #349388;" (click)="removeTemplate(i)">
                                 <mat-icon>delete</mat-icon>
                             </button>
-                            <!-- <button mat-icon-button style="color: #349388;" [disabled] *ngIf="template.label">
-                            <mat-icon>check_circle_filled</mat-icon>
-                        </button> -->
                         </form>
                     </div>
-                    <div class="row w-100  justify-content-center" *ngIf="templateArray().length">
-                        <button mat-raised-button (click)="onSubmit()"
-                            style="background-color: #349388;">Submit</button>
-                    </div>
+
                 </mat-card-content>
             </mat-card>
         </div>
+        <mat-action-row>
+            <div class="row w-100  justify-content-center" *ngIf="templateArray().length">
+                <button mat-raised-button (click)="onSubmit()" [disabled]='true'
+                    style="background-color: #349388;">Submit</button>
+            </div>
+        </mat-action-row>
     </mat-expansion-panel>
 </mat-accordion>

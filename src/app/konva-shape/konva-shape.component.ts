@@ -125,6 +125,14 @@ export class KonvaShapeComponent implements OnInit {
 
   onCheckboChange() {
     this.isBgColored = !this.isBgColored;
+    this.aService.extractText(this.boxCoordinates, this.templateId, this.pageId, this.isBgColored).subscribe((res) => {
+      console.log(res);
+      this.responseText = res.text;
+      this.openPopover();
+    }, err => {
+      // console.log(err);
+      this.allowPaiting = true;
+    });
   }
   extractText() {
     // console.log('extractText');

@@ -129,6 +129,7 @@ export class AnnotationdataService {
     this.templateField.level = 1;
     this.templateField.sequence_num = data.sequence_num;
     this.templateField.template = data.template;
+    this.templateField.is_bg_colored = data.is_bg_colored;
 
     this.allowPainting = false;
 

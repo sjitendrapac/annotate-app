@@ -7,6 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { AnnotationdataService } from '../services/annotationdata.service';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-annotate',
@@ -19,7 +20,11 @@ export class AnnotateComponent implements OnInit {
   // @ViewChild(MatPaginator) paginator: MatPaginator;
   // tslint:disable-next-line: no-input-rename
   @Input('templateId') templateId;
+  // tslint:disable-next-line: no-input-rename
+  @Input('mycheckbox') mycheckbox: MatCheckbox;
+
   dataSource = new MatTableDataSource<any>();
+
   fieldSubmitted = true;
 
   displayedColumns = ['label', 'type', 'text'];
@@ -39,10 +44,6 @@ export class AnnotateComponent implements OnInit {
   isBgColored: boolean;
 
   validTypes;
-  // validTypes = [
-  //   { type: 'Numeric' },
-  //   { type: 'Alphanumeric' }
-  // ];
 
   constructor(private fb: FormBuilder, private aService: AnnotationdataService) {
     this.templateForm = this.fb.group({
@@ -59,7 +60,7 @@ export class AnnotateComponent implements OnInit {
 
   ngOnInit() {
     this.aService.AnnotateCalled$.subscribe((res) => {
-      this.patchTextField(res.responseText);
+      this.patchTextField(res.responseText, res.isBgColored);
       this.isBgColored = res.isBgColored;
       // this.selectedFormIndex
     });
@@ -86,6 +87,7 @@ export class AnnotateComponent implements OnInit {
       label: new FormControl(),
       text: new FormControl(),
       type: new FormControl(),
+      checkbox: new FormControl()
     });
   }
 
@@ -105,6 +107,7 @@ export class AnnotateComponent implements OnInit {
 
   patchForms(obj) {
     this.savedTemplateFields = obj;
+    console.log(this.savedTemplateFields);
     this.aService.getDataTypes().subscribe((res) => {
       this.validTypes = res;
       let type;
@@ -117,21 +120,26 @@ export class AnnotateComponent implements OnInit {
         const template =
           this.fb.group({
             label: element.name,
-            text: '',
+            text: element.value,
             type,
+            checkbox: element.is_bg_colored
           });
 
         this.templateArray().push(template);
+        // console.log(this.mycheckbox.id);
         // this.storedFieldNames.push(element.name);
 
       });
     });
   }
 
-  patchTextField(text) {
+  patchTextField(text, isBgColored) {
     const i = this.selectedFormIndex;
     console.log(i);
     this.templateArray().at(i).get('text').patchValue(text);
+    this.templateArray().at(i).get('checkbox').patchValue(isBgColored);
+    console.log(this.templateArray().at(i).get('checkbox').value);
+    // this.templateArray().at(i).get('checkbox').value = true;
   }
   onTemplateSubmit(t, i) {
     let typeId;
@@ -140,27 +148,38 @@ export class AnnotateComponent implements OnInit {
         typeId = type.id;
       }
     });
-
+    console.log('checlbox:', t.value.checkbox);
     const fieldData = {
       label: t.value.label,
       type: typeId,
-      text: t.value.text,
+      value: t.value.text,
       sequence_num: i,
       template: this.templateId,
+      is_bg_colored: this.isBgColored
     };
     // console.log(fieldData);
     this.aService.postTemplateFieldData(fieldData).subscribe(res => {
       console.log(res);
       this.fieldSubmitted = true;
-      this.addTemplate();
       this.aService.enableCanvas();
       this.isBgColored = false;
-      const obj = { id: this.templateId, pageNo: '' };
-      this.aService.viewTemplate(obj).subscribe((res) => {
-        // console.log(res);
-        this.patchForms(res);
-      }, (err => console.log(err)
-      ));
+      // const obj = { id: this.templateId, pageNo: '' };
+      // this.aService.viewTemplate(obj).subscribe((res) => {
+      //   console.log(res[res.length - 1]);
+      //   const element = res[res.length - 1];
+      //   t = this.validTypes.find((i) => i.type === element.data_type);
+      //   console.log(t);
+      //   const template =
+      //     this.fb.group({
+      //       label: element.name,
+      //       text: element.value,
+      //       type,
+      //     });
+      //   this.templateArray().push(template);
+      //   // this.patchForms(res);
+      // }, (err => console.log(err)
+      // ));
+      this.addTemplate();
     }, error => console.log(error));
     //   // API Call to confirm field data.
   }

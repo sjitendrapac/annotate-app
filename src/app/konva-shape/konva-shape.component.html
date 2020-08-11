@@ -39,8 +39,9 @@
 
 <ng-template #popContent>
     <mat-card>
-        <mat-card-title>{{label}}</mat-card-title>
-        <mat-card-content>{{responseText}}
+        <!-- <mat-card-title>Text Value: {{label}}</mat-card-title> -->
+        <mat-card-content>Text Value: {{responseText}}</mat-card-content>
+        <mat-card-content>
             <button mat-icon-button (click)="closePopover()">
                 <mat-icon>check_circle_outline</mat-icon>
             </button>

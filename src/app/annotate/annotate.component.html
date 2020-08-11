@@ -24,19 +24,18 @@
                                 <input class="input-class" matInput formControlName="text" placeholder="Text"
                                     color="primary">
                             </mat-form-field>
-                            <button mat-icon-button style="color: #349388;" (click)="onTemplateSubmit(template, i)"
-                                *ngIf="!savedTemplateFields[i]">
+                            <mat-checkbox formControlName="checkbox" style="color: #349388;">
+                                Highlight Field
+                            </mat-checkbox>
+                            <button mat-icon-button style="color: #349388;" (click)="onTemplateSubmit(template, i)">
                                 <mat-icon>check_circle_outline</mat-icon>
                             </button>
-                            <button mat-icon-button style="color: #349388;" (click)="removeTemplate(i)"
-                                *ngIf="!savedTemplateFields[i]">
-                                <mat-icon>delete</mat-icon>
-                            </button>
-                            <mat-checkbox style="color: #349388;" [checked]="isBgColored && i == selectedFormIndex"
-                                [disabled]="true" *ngIf="!savedTemplateFields[i]">Highlight Field
-                            </mat-checkbox>
-                            <button mat-icon-button style="color: #349388;" [disabled] *ngIf="savedTemplateFields[i]">
+                            <!-- <button mat-icon-button style="color: #349388;" [disabled]="true"
+                                *ngIf="savedTemplateFields[i]">
                                 <mat-icon>check_circle_filled</mat-icon>
+                            </button> -->
+                            <button mat-icon-button style="color: #349388;" (click)="removeTemplate(i)">
+                                <mat-icon>delete</mat-icon>
                             </button>
                         </form>
                     </div>
@@ -46,7 +45,7 @@
         </div>
         <mat-action-row>
             <div class="row w-100  justify-content-center" *ngIf="templateArray().length">
-                <button mat-raised-button (click)="onSubmit()" [disabled]
+                <button mat-raised-button (click)="onSubmit()" [disabled]='true'
                     style="background-color: #349388;">Submit</button>
             </div>
         </mat-action-row>

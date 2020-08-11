@@ -179,7 +179,7 @@ export class KonvaShapeComponent implements OnInit {
               console.log('scalex', this.stage.scaleX());
               this.loadImage(data, this.stage.scaleX(), undefined);
               if (window.devicePixelRatio >= 1.25) {
-                this.defaultScale = (1 / window.devicePixelRatio) + 0.2;
+                this.defaultScale = (1 / window.devicePixelRatio) + ;
                 this.stage.setSize({ width: page.view[2] * this.defaultScale, height: page.view[3] * this.defaultScale });
                 this.reset();
               }
@@ -584,13 +584,14 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   relativeScalePostion(pos) {
-    if (this.stage.scaleX() > 1) {
-      pos.x = this.stage.getPointerPosition().x / this.stage.scaleX();
-      pos.y = this.stage.getPointerPosition().y / this.stage.scaleX();
-    } else {
-      pos.x = this.stage.getPointerPosition().x * this.stage.scaleX();
-      pos.y = this.stage.getPointerPosition().y * this.stage.scaleX();
-    }
+    // if (this.stage.scaleX() > 1) {
+    pos.x = this.stage.getPointerPosition().x / this.stage.scaleX();
+    pos.y = this.stage.getPointerPosition().y / this.stage.scaleX();
+    // }
+    // } else {
+    //   pos.x = this.stage.getPointerPosition().x * this.stage.scaleX();
+    //   pos.y = this.stage.getPointerPosition().y * this.stage.scaleX();
+    // }
     return pos;
   }
 

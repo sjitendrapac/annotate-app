@@ -35,12 +35,15 @@
                         </button> -->
                         </form>
                     </div>
-                    <div class="row w-100  justify-content-center" *ngIf="templateArray().length">
-                        <button mat-raised-button (click)="onSubmit()"
-                            style="background-color: #349388;">Submit</button>
-                    </div>
+
                 </mat-card-content>
             </mat-card>
         </div>
+        <mat-action-row>
+            <div class="row w-100  justify-content-center" *ngIf="templateArray().length">
+                <button mat-raised-button (click)="onSubmit()" [disabled]
+                    style="background-color: #349388;">Submit</button>
+            </div>
+        </mat-action-row>
     </mat-expansion-panel>
 </mat-accordion>

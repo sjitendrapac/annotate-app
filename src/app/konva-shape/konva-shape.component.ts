@@ -61,6 +61,7 @@ export class KonvaShapeComponent implements OnInit {
   disableNextPage = false;
   pageId = 0;
   pdfData: string[] = [];
+  zoomLevel = 0;
 
   constructor(
     private RectService: RectangleService,
@@ -104,7 +105,7 @@ export class KonvaShapeComponent implements OnInit {
   // }
 
   closePopover(): void {
-    console.log("data passed for template Field: ", this.boxCoordinates, this.responseText, this.pageId);
+    // console.log("data passed for template Field: ", this.boxCoordinates, this.responseText, this.pageId);
     this.aService.postCoordinates(this.boxCoordinates, this.responseText, this.pageId);
     this.aService.callAnnotateComponent(this.responseText);
     this.clearRectangles();
@@ -114,7 +115,7 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   incorrectText() {
-    console.log('incorrectText');
+    // console.log('incorrectText');
     this.allowPaiting = this.aService.isPaintingEnabled();
     this.clearRectangles();
     this.popover.close();
@@ -125,10 +126,10 @@ export class KonvaShapeComponent implements OnInit {
     const rNodes = this.layer.find('Rect');
     const tr = this.layer.find('Transformer');
     rNodes.toArray().forEach(node => {
-      console.log('inside', node);
+      // console.log('inside', node);
       node.destroy();
     });
-    console.log(tr);
+    // console.log(tr);
     // tr.toArray().forEach(t => {
     //   t.detach();
     // });
@@ -137,7 +138,7 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   openPopover(): void {
-    console.log('open' + this.popover.isOpen());
+    // console.log('open' + this.popover.isOpen());
     // this.maskEditorAppliedMessage = "Successfully Applied";
     if (!this.popover.isOpen()) {
       this.popover.open();
@@ -152,12 +153,12 @@ export class KonvaShapeComponent implements OnInit {
       //
       // Fetch the first page
       //
-      console.log('total pages', pdf.numPages);
+      // console.log('total pages', pdf.numPages);
       this.totalPages = pdf.numPages;
       for (var i = 1; i <= pdf.numPages; i++) {
         await pdf.getPage(i).then(async page => {
           // var scale = 1;
-          console.log('DevicePixelRatio', window.devicePixelRatio);
+          // console.log('DevicePixelRatio', window.devicePixelRatio);
 
           var scale = window.devicePixelRatio;
           // var scale = 2;
@@ -178,12 +179,12 @@ export class KonvaShapeComponent implements OnInit {
           await task.promise.then(async () => {
             data = await canvas.toDataURL('image/png', 1);
             this.pdfData.push(data);
-            console.log(i, this.pdfData.length);
-            console.log('pageID', this.pageId);
+            // console.log(i, this.pdfData.length);
+            // console.log('pageID', this.pageId);
             if (i === 1) {
               // this.pageId++;
-              console.log('scale: ', window.devicePixelRatio);
-              console.log('scalex', this.stage.scaleX());
+              // console.log('scale: ', window.devicePixelRatio);
+              // console.log('scalex', this.stage.scaleX());
               this.currentPage = i - 1;
               this.pageId = i;
               this.loadImage(data, this.stage.scaleX(), undefined);
@@ -208,8 +209,8 @@ export class KonvaShapeComponent implements OnInit {
     // console.log(this.parentEl);
     // console.log(this.parentEl.parentElement.offsetHeight);
     // console.log(this.parentEl.parentElement.offsetLeft);
-    console.log(window.screenX);
-    console.log(window.screenX);
+    // console.log(window.screenX);
+    // console.log(window.screenX);
     this.stage = new Konva.Stage({
       container: 'konvaContainer',
       width,
@@ -226,9 +227,9 @@ export class KonvaShapeComponent implements OnInit {
     this.clearRectangles();
     this.currentPage = obj.page_number - 1;
     this.pageId = obj.page_number;
-    console.log('pageId: ', this.pageId, 'currentPage: ', this.currentPage);
+    // console.log('pageId: ', this.pageId, 'currentPage: ', this.currentPage);
     const pageData = this.pdfData[this.currentPage];
-    console.log(pageData);
+    // console.log(pageData);
     this.loadImage(pageData, this.stage.scaleX(), obj);
     // this.loadImage(this.pdfData[obj.page_number - 1], this.stage.scaleX(), obj);
 
@@ -240,8 +241,8 @@ export class KonvaShapeComponent implements OnInit {
       node.destroy();
     });
 
-    console.log(this.imageHeight);
-    console.log(this.imageWidth);
+    // console.log(this.imageHeight);
+    // console.log(this.imageWidth);
     const pos = {
       x: obj.coordinates.pos.x * this.imageWidth * this.stage.scaleX(),
       y: obj.coordinates.pos.y * this.imageHeight * this.stage.scaleY(),
@@ -257,9 +258,9 @@ export class KonvaShapeComponent implements OnInit {
     this.layer.batchDraw();
     this.addTransformerListeners();
     // rect.on('')
-    rect.on('transformend', () => {
-      console.log('transform ended');
-    });
+    // rect.on('transformend', () => {
+    //   console.log('transform ended');
+    // });
   }
 
   addLineListeners() {
@@ -284,7 +285,7 @@ export class KonvaShapeComponent implements OnInit {
       this.relativeScalePostion(pos);
       component.startPos = pos;
       rect = component.RectService.rectangle(pos, w, h);
-      console.log('mousedown touchstart: pos' + pos.x + ' pos.y' + pos.y + ' w: ' + w + ' h:' + h);
+      // console.log('mousedown touchstart: pos' + pos.x + ' pos.y' + pos.y + ' w: ' + w + ' h:' + h);
       component.shapes.push(rect);
       component.layer.add(rect);
       component.addTransformerListeners();
@@ -327,15 +328,15 @@ export class KonvaShapeComponent implements OnInit {
         r.destroy();
       }
       const lastNode = rNodes[rNodes.length - 1];
-      console.log('mousedown touchend: ' + lastNode.attrs.x + '  lastNode.attrs.y' + lastNode.attrs.y +
-        ' lastNode.attrs.width: ' + lastNode.attrs.width + ' lastNode.attrs.height: ' + lastNode.attrs.height);
+      // console.log('mousedown touchend: ' + lastNode.attrs.x + '  lastNode.attrs.y' + lastNode.attrs.y +
+      //   ' lastNode.attrs.width: ' + lastNode.attrs.width + ' lastNode.attrs.height: ' + lastNode.attrs.height);
       const crop = {
         x: lastNode.attrs.x,
         y: lastNode.attrs.y,
         width: lastNode.attrs.width,
         height: lastNode.attrs.height,
       };
-      console.log(lastNode);
+      // console.log(lastNode);
       component.layer.draw();
       // component.makeClientCrop(crop);
       // console.log(crop);
@@ -344,27 +345,27 @@ export class KonvaShapeComponent implements OnInit {
       const imWidth = image.attrs.image.naturalWidth;
       const imHeight = image.attrs.image.naturalHeight;
 
-      console.log(Object.values(crop));
+      // console.log(Object.values(crop));
       if (crop.x < 0) {
         crop.x = crop.x * -1;
       }
       if (crop.y < 0) {
         crop.y = crop.y * -1;
       }
-      console.log(crop);
+      // console.log(crop);
       const coordinates = {
         x: crop.x / this.stage.scaleX() / imWidth,
         y: crop.y / this.stage.scaleY() / imHeight,
         w: crop.width / this.stage.scaleX() / imWidth,
         h: crop.height / this.stage.scaleY() / imHeight
       };
-      console.log(coordinates);
+      // console.log(coordinates);
       this.aService.extractText(coordinates, this.templateId, this.pageId).subscribe((res) => {
-        console.log(res);
+        // console.log(res);
         this.responseText = res.text;
         this.boxCoordinates = coordinates;
       }, err => {
-        console.log(err);
+        // console.log(err);
         this.allowPaiting = true;
       });
       component.config.container = 'konvaDivId';
@@ -466,7 +467,7 @@ export class KonvaShapeComponent implements OnInit {
     imageObj.onload = (() => {
       this.imageHeight = imageObj.naturalHeight;
       this.imageWidth = imageObj.naturalWidth;
-      console.log('currentScale: ', currentScale);
+      // console.log('currentScale: ', currentScale);
       const w = imageObj.naturalWidth * currentScale;
       const h = imageObj.naturalHeight * currentScale;
       // console.log('imw & imh: ', this.imageWidth, this.imageHeight);
@@ -488,9 +489,9 @@ export class KonvaShapeComponent implements OnInit {
       // // compute a scale for best fit and apply it
       // let scale = (widthFit > heightFit) ? heightFit : widthFit;
       const imageNodes = this.layer.find('Image');
-      console.log(imageNodes);
+      // console.log(imageNodes);
       imageNodes.toArray().forEach((i) => i.destroy());
-      console.log('after:', imageNodes);
+      // console.log('after:', imageNodes);
       const img = new Konva.Image({
         image: imageObj,
         x: this.stage.width() / 2,
@@ -571,7 +572,7 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   nextPage() {
-    console.log('nextPage', this.currentPage);
+    // console.log('nextPage', this.currentPage);
     if (this.currentPage < this.totalPages) {
       this.disablePrevPage = false;
       this.currentPage = this.currentPage + 1;
@@ -586,7 +587,7 @@ export class KonvaShapeComponent implements OnInit {
   }
 
   prevPage() {
-    console.log('prevPage', this.currentPage);
+    // console.log('prevPage', this.currentPage);
     if (this.currentPage >= 1) {
       this.disableNextPage = false;
       this.currentPage = this.currentPage - 1;
@@ -639,10 +640,13 @@ export class KonvaShapeComponent implements OnInit {
 
   zoomIn() {
     console.log('zoomin', this.stage.scaleX());
-    if (this.stage.scaleX() < 2) {
-      console.log(this.zoomFactor);
+    console.log('zoomin default', this.defaultScale);
+    console.log('zoomin level', this.zoomLevel);
+    if (this.stage.scaleX() < 2 && this.zoomLevel < 4) {
+      this.zoomLevel = this.zoomLevel + 1;
       const scale = this.stage.scaleX() + this.zoomFactor;
       this.stage.scale({ x: scale, y: scale });
+      console.log('zoomin', this.stage.scaleX());
       const pageData = this.pdfData[this.currentPage];
       this.loadImage(pageData, this.stage.scaleX(), undefined);
     }
@@ -650,20 +654,22 @@ export class KonvaShapeComponent implements OnInit {
 
 
   zoomOut() {
-    console.log('zoomout', this.stage.scaleX());
-    if (this.stage.scaleX() > this.defaultScale) {
+    console.log('zoomout stage', this.stage.scaleX());
+    console.log('zoomout default', this.defaultScale);
+    console.log('zoomout level', this.zoomLevel);
+    if (this.stage.scaleX() > this.defaultScale && this.zoomLevel >= 0) {
+      this.zoomLevel = this.zoomLevel - 1;
       const scale = this.stage.scaleX() - this.zoomFactor;
       this.stage.scale({ x: scale, y: scale });
-      // this.layer.scale({x: scale,y:scale});
-      // this.layer.draw();
+      console.log('zoomout', this.stage.scaleX());
       const pageData = this.pdfData[this.currentPage];
       this.loadImage(pageData, this.stage.scaleX(), undefined);
     }
   }
   reset() {
     this.stage.scale({ x: this.defaultScale, y: this.defaultScale });
-    console.log('zoomreset', this.pageId);
     console.log('zoomreset', this.stage.scaleX());
+    this.zoomLevel = 0;
     const pageData = this.pdfData[this.currentPage];
     this.loadImage(pageData, this.stage.scaleX(), undefined);
   }
